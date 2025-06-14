@@ -41,3 +41,11 @@ type S3Config struct {
 	UseSSL          bool   `env:"S3_USE_SSL" default:"false"`
 	PublicURL       string `env:"S3_PUBLIC_URL" default:""`
 }
+
+type SMTPConfig struct {
+	Host     string `env:"SMTP_HOST" default:""`
+	Port     int    `env:"SMTP_PORT" default:"587"`
+	Username string `env:"SMTP_USERNAME" default:""`
+	Password string `env:"SMTP_PASSWORD" default:""`
+	From     string `env:"EMAIL_FROM" default:""`
+}

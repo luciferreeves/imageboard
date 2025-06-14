@@ -14,6 +14,7 @@ var (
 	S3                S3Config
 	Server            ServerConfig
 	Session           SessionConfig
+	SMTP              SMTPConfig
 )
 
 func init() {
@@ -42,6 +43,10 @@ func init() {
 	}
 
 	if err := Parse(&Session); err != nil {
+		log.Fatalf("failed to parse configuration: %v", err)
+	}
+
+	if err := Parse(&SMTP); err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 }
