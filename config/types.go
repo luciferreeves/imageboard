@@ -4,7 +4,7 @@ import "time"
 
 type ServerConfig struct {
 	Host    string `env:"SERVER_HOST" default:"localhost"`
-	Port    string `env:"SERVER_PORT" default:"8080"`
+	Port    int    `env:"SERVER_PORT" default:"8080"`
 	AppName string `env:"APP_NAME" default:"ImageBoard"`
 }
 

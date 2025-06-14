@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"imageboard/config"
 	"imageboard/middleware"
 	"imageboard/processors"
@@ -43,5 +44,5 @@ func main() {
 
 	router.Initialize(app)
 
-	log.Fatalf("Server failed to start: %v", app.Listen(config.Server.Host+":"+config.Server.Port))
+	log.Fatalf("Server failed to start: %v", app.Listen(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)))
 }
