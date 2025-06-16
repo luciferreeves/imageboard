@@ -19,5 +19,7 @@ WORKDIR /imageboard
 RUN apt-get update && apt-get install -y ca-certificates tzdata && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /imageboard/bin/imageboard .
+COPY --from=builder /imageboard/templates ./templates
+COPY --from=builder /imageboard/static ./static
 
 CMD ["./imageboard"]
