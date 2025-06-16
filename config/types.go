@@ -3,9 +3,12 @@ package config
 import "time"
 
 type ServerConfig struct {
-	Host    string `env:"SERVER_HOST" default:"localhost"`
-	Port    int    `env:"SERVER_PORT" default:"8080"`
-	AppName string `env:"APP_NAME" default:"ImageBoard"`
+	Host              string `env:"SERVER_HOST" default:"localhost"`
+	Port              int    `env:"SERVER_PORT" default:"8080"`
+	AppName           string `env:"APP_NAME" default:"ImageBoard"`
+	AppSecret         string `env:"APP_SECRET" default:"default_secret"`
+	IsDevMode         bool   `env:"DEV_MODE" default:"true"`
+	MinPasswordLength int    `env:"MIN_PASSWORD_LENGTH" default:"8"`
 }
 
 type DatabaseConfig struct {
@@ -26,7 +29,7 @@ type SessionConfig struct {
 	CookieSameSite string        `env:"SESSION_COOKIE_SAMESITE" default:"Lax"`
 }
 
-type ImageConfig struct {
+type UploadConfig struct {
 	MaxSize      int    `env:"IMAGE_MAX_SIZE" default:"10485760"`
 	AllowedTypes string `env:"IMAGE_ALLOWED_TYPES" default:"image/jpeg,image/png,image/gif,image/webp"`
 }

@@ -17,19 +17,19 @@ import (
 )
 
 func main() {
-	if config.AppSecret == "default_secret" {
+	if config.Server.AppSecret == "default_secret" {
 		log.Println("Warning: AppSecret is set to a default value which is not secure. Please set a strong random secret in your APP_SECRET environment variable or .env file.")
 	}
 
 	engine := html.New("./templates", ".html")
-	engine.Reload(config.IsDevelopmentMode)
+	engine.Reload(config.Server.IsDevMode)
 	app := fiber.New(fiber.Config{
 		Views: engine,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			log.Printf("Error: %v", err)
 			return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 		},
-		BodyLimit: config.Image.MaxSize,
+		BodyLimit: config.Upload.MaxSize,
 	})
 
 	app.Use(recover.New())

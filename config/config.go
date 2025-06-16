@@ -7,14 +7,12 @@ import (
 )
 
 var (
-	AppSecret         string = "default_secret"
-	Database          DatabaseConfig
-	IsDevelopmentMode bool = true
-	Image             ImageConfig
-	S3                S3Config
-	Server            ServerConfig
-	Session           SessionConfig
-	SMTP              SMTPConfig
+	Database DatabaseConfig
+	Upload   UploadConfig
+	S3       S3Config
+	Server   ServerConfig
+	Session  SessionConfig
+	SMTP     SMTPConfig
 )
 
 func init() {
@@ -22,15 +20,11 @@ func init() {
 		log.Println("no .env file found, using environment variables")
 	}
 
-	AppSecret = getEnv("APP_SECRET", AppSecret)
-
 	if err := Parse(&Database); err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
-	IsDevelopmentMode = getEnvBool("DEV_MODE", IsDevelopmentMode)
-
-	if err := Parse(&Image); err != nil {
+	if err := Parse(&Upload); err != nil {
 		log.Fatalf("failed to parse configuration: %v", err)
 	}
 
