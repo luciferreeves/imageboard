@@ -8,7 +8,11 @@
   <body>
     {% include 'partials/navbar.django' %}
 
-    <main>{{ embed }}</main>
+    <main>
+      {% block content %}
+
+      {% endblock %}
+    </main>
 
     <footer>
       <p>&copy; 2025 {{ Appname }}. All rights reserved.</p>

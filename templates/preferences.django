@@ -1,21 +1,33 @@
-<h2>Site Preferences</h2>
+{% extends 'layouts/main.django' %}
 
-<form id="preferences-form">
-  <div>
-    <label>Theme</label>
-    <div>
-      <input type="radio" name="theme" value="light" id="theme-light" />
-      <label for="theme-light">Light Mode</label>
-    </div>
-    <div>
-      <input type="radio" name="theme" value="dark" id="theme-dark" />
-      <label for="theme-dark">Dark Mode</label>
-    </div>
-  </div>
+{% block content %}
+  <h2>Site Preferences</h2>
 
-  <button type="submit">SAVE PREFERENCES</button>
-</form>
+  <form id="preferences-form">
+    <fieldset>
+      <legend>Theme Settings</legend>
 
-<p>
-  <a href="/">Back to Posts</a>
-</p>
+      <div class="form-group">
+        <label>Theme</label>
+        <div class="radio-group">
+          <div>
+            <input type="radio" name="theme" value="light" id="theme-light" />
+            <label for="theme-light">Light Mode</label>
+          </div>
+          <div>
+            <input type="radio" name="theme" value="dark" id="theme-dark" />
+            <label for="theme-dark">Dark Mode</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">SAVE PREFERENCES</button>
+      </div>
+    </fieldset>
+  </form>
+
+  <p>
+    <a href="/">Back to Posts</a>
+  </p>
+{% endblock %}

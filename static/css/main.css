@@ -322,3 +322,53 @@ section h2 {
 .center {
     text-align: center;
 }
+
+/* Form Elements */
+fieldset {
+    background: var(--bg-section);
+    border: 2px inset var(--border-main);
+    padding: 12px;
+    margin: 8px 0;
+}
+
+legend {
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--text-main);
+    padding: 0 4px;
+    background: var(--bg-main);
+}
+
+.form-group {
+    margin: 8px 0;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 12px;
+    margin: 4px 0 2px 0;
+    color: var(--text-main);
+}
+
+.form-group small {
+    display: block;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+.form-actions {
+    margin: 12px 0 8px 0;
+    text-align: center;
+}
+
+.radio-group div {
+    margin: 4px 0;
+}
+
+.radio-group label {
+    display: inline;
+    font-weight: normal;
+    margin-left: 4px;
+}

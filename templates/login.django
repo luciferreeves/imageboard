@@ -1,33 +1,36 @@
-<h2>Login to {{ Appname }}</h2>
+{% extends 'layouts/main.django' %}
 
-{% if Error %}
-  <div class="error">{{ Error }}</div>
-{% endif %}
+{% block content %}
+  <h2>Login to {{ Appname }}</h2>
 
-<form action="/login" method="POST">
-  <table>
-    <tr>
-      <th colspan="2">User Login</th>
-    </tr>
-    <tr>
-      <td><label for="username">Username or Email:</label></td>
-      <td><input type="text" id="username" name="username" required value="{{ Username }}" /></td>
-    </tr>
-    <tr>
-      <td><label for="password">Password:</label></td>
-      <td><input type="password" id="password" name="password" required /></td>
-    </tr>
-    <tr>
-      <td colspan="2" class="center">
+  {% if Error %}
+    <div class="error">{{ Error }}</div>
+  {% endif %}
+
+  <form action="/login" method="POST">
+    <fieldset>
+      <legend>User Login</legend>
+
+      <div class="form-group">
+        <label for="username">Username or Email:</label>
+        <input type="text" id="username" name="username" required value="{{ Username }}" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+
+      <div class="form-actions">
         <input type="submit" value="LOGIN" />
-      </td>
-    </tr>
-  </table>
-</form>
+      </div>
+    </fieldset>
+  </form>
 
-<p>
-  Don't have an account? <a href="/register">Register here</a>
-</p>
-<p>
-  <a href="/forgot-password">Forgot your password?</a>
-</p>
+  <p>
+    Don't have an account? <a href="/register">Register here</a>
+  </p>
+  <p>
+    <a href="/forgot-password">Forgot your password?</a>
+  </p>
+{% endblock %}

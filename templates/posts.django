@@ -1,39 +1,34 @@
+{% extends 'layouts/main.django' %}
 {% include 'partials/search.django' %}
+{% block content %}
+  <h2>{{ Title }}</h2>
 
-<h2>{{ Title }}</h2>
-
-<div class="posts-grid">
-  {% if Posts %}
-    {% for post in Posts %}
-      <div class="post-cell">
-        <img src="/uploads/thumbnails/{{ post.FileName }}" alt="{{ post.Title }}" class="post-img" />
-        <div class="post-title">
-          {% if post.Title %}
-            {{ post.Title }}
-          {% else %}
-            Post #{{ post.ID }}
-          {% endif %}
+  <div class="posts-grid">
+    {% if Posts %}
+      {% for post in Posts %}
+        <div class="post-cell">
+          <img src="/uploads/thumbnails/{{ post.FileName }}" alt="{{ post.Title }}" class="post-img" />
+          <div class="post-title">
+            {% if post.Title %}
+              {{ post.Title }}
+            {% else %}
+              Post #{{ post.ID }}
+            {% endif %}
+          </div>
+          <div class="post-info">{{ post.Tags|length }} tags</div>
         </div>
-        <div class="post-info">{{ post.Tags|length }} tags</div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <h3>NO POSTS FOUND!</h3>
+        <p>Be the first to share something awesome!</p>
+        <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'" />
       </div>
-    {% endfor %}
-  {% else %}
-    <table class="post-table">
-      <tr>
-        <th>NO POSTS FOUND!</th>
-      </tr>
-      <tr>
-        <td class="center">
-          Be the first to share something awesome!<br>
-          <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'">
-        </td>
-      </tr>
-    </table>
-  {% endif %}
-</div>
+    {% endif %}
+  </div>
 
-<p class="center">
-  <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'">
-</p>
+  <p class="center">
+    <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'" />
+  </p>
   <button class="secondary" onclick="location.href='/tags'">BROWSE TAGS</button>
-</div>
+{% endblock %}

@@ -8,6 +8,7 @@ import (
 
 func PostsController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", "Posts")
+	ctx.Locals("request", fiber.Map{"path": ctx.Path()})
 
 	searchQuery := ctx.Query("tags", "")
 

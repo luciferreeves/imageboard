@@ -1,35 +1,45 @@
-<h2>Join {{ Appname }}</h2>
+{% extends 'layouts/main.django' %}
 
-{% if Error %}
-  <div class="error-message">{{ Error }}</div>
-{% endif %}
+{% block content %}
+  <h2>Join {{ Appname }}</h2>
 
-<form action="/register" method="POST">
-  <div>
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" required value="{{ Username }}" minlength="3" maxlength="72" pattern="[a-zA-Z0-9_-]+" />
-    <small>3-72 characters, letters, numbers, underscores, and hyphens only</small>
-  </div>
+  {% if Error %}
+    <div class="error">{{ Error }}</div>
+  {% endif %}
 
-  <div>
-    <label for="email">Email Address</label>
-    <input type="email" id="email" name="email" required value="{{ Email }}" />
-  </div>
+  <form action="/register" method="POST">
+    <fieldset>
+      <legend>Create Account</legend>
 
-  <div>
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required minlength="8" />
-    <small>Minimum 8 characters</small>
-  </div>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required value="{{ Username }}" minlength="3" maxlength="72" pattern="[a-zA-Z0-9_-]+" />
+        <small>3-72 characters, letters, numbers, underscores, and hyphens only</small>
+      </div>
 
-  <div>
-    <label for="confirm_password">Confirm Password</label>
-    <input type="password" id="confirm_password" name="confirm_password" required />
-  </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required value="{{ Email }}" />
+      </div>
 
-  <button type="submit">CREATE ACCOUNT</button>
-</form>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="8" />
+        <small>Minimum 8 characters</small>
+      </div>
 
-<p>
-  Already have an account? <a href="/login">Login here</a>
-</p>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">CREATE ACCOUNT</button>
+      </div>
+    </fieldset>
+  </form>
+
+  <p>
+    Already have an account? <a href="/login">Login here</a>
+  </p>
+{% endblock %}
