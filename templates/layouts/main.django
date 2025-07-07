@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ Title }} - {{ Appname }}</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    {% include 'partials/navbar.django' %}
+
+    <main>{{ embed }}</main>
+
+    <footer>
+      <p>&copy; 2025 {{ Appname }}. All rights reserved.</p>
+    </footer>
+
+    <script src="/scripts/theme.js"></script>
+  </body>
+</html>

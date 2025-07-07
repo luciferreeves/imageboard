@@ -1,0 +1,21 @@
+<h2>Site Preferences</h2>
+
+<form id="preferences-form">
+  <div>
+    <label>Theme</label>
+    <div>
+      <input type="radio" name="theme" value="light" id="theme-light" />
+      <label for="theme-light">Light Mode</label>
+    </div>
+    <div>
+      <input type="radio" name="theme" value="dark" id="theme-dark" />
+      <label for="theme-dark">Dark Mode</label>
+    </div>
+  </div>
+
+  <button type="submit">SAVE PREFERENCES</button>
+</form>
+
+<p>
+  <a href="/">Back to Posts</a>
+</p>

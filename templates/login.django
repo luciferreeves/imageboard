@@ -1,0 +1,33 @@
+<h2>Login to {{ Appname }}</h2>
+
+{% if Error %}
+  <div class="error">{{ Error }}</div>
+{% endif %}
+
+<form action="/login" method="POST">
+  <table>
+    <tr>
+      <th colspan="2">User Login</th>
+    </tr>
+    <tr>
+      <td><label for="username">Username or Email:</label></td>
+      <td><input type="text" id="username" name="username" required value="{{ Username }}" /></td>
+    </tr>
+    <tr>
+      <td><label for="password">Password:</label></td>
+      <td><input type="password" id="password" name="password" required /></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="center">
+        <input type="submit" value="LOGIN" />
+      </td>
+    </tr>
+  </table>
+</form>
+
+<p>
+  Don't have an account? <a href="/register">Register here</a>
+</p>
+<p>
+  <a href="/forgot-password">Forgot your password?</a>
+</p>

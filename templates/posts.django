@@ -1,0 +1,39 @@
+{% include 'partials/search.django' %}
+
+<h2>{{ Title }}</h2>
+
+<div class="posts-grid">
+  {% if Posts %}
+    {% for post in Posts %}
+      <div class="post-cell">
+        <img src="/uploads/thumbnails/{{ post.FileName }}" alt="{{ post.Title }}" class="post-img" />
+        <div class="post-title">
+          {% if post.Title %}
+            {{ post.Title }}
+          {% else %}
+            Post #{{ post.ID }}
+          {% endif %}
+        </div>
+        <div class="post-info">{{ post.Tags|length }} tags</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <table class="post-table">
+      <tr>
+        <th>NO POSTS FOUND!</th>
+      </tr>
+      <tr>
+        <td class="center">
+          Be the first to share something awesome!<br>
+          <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'">
+        </td>
+      </tr>
+    </table>
+  {% endif %}
+</div>
+
+<p class="center">
+  <input type="button" value="UPLOAD IMAGE" onclick="location.href='/upload'">
+</p>
+  <button class="secondary" onclick="location.href='/tags'">BROWSE TAGS</button>
+</div>

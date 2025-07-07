@@ -15,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/template/django/v3"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		log.Println("Warning: AppSecret is set to a default value which is not secure. Please set a strong random secret in your APP_SECRET environment variable or .env file.")
 	}
 
-	engine := html.New("./templates", ".html")
+	engine := django.New("./templates", ".django")
 	engine.Reload(config.Server.IsDevMode)
 	app := fiber.New(fiber.Config{
 		Views: engine,

@@ -1,0 +1,16 @@
+<form action="/" method="GET">
+  <div class="search-box">
+    <table>
+      <tr>
+        <th>Search Posts</th>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" name="tags" placeholder="tags..." value="{{ SearchQuery }}" />
+          <input type="submit" value="SEARCH" />
+          <input type="button" value="CLEAR" onclick="this.form.reset(); window.location.href='/';" />
+        </td>
+      </tr>
+    </table>
+  </div>
+</form>
