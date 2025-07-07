@@ -1,8 +1,26 @@
-<aside>
+<div class="search-container">
   <form action="/" method="GET">
-    <h3>Search Posts</h3>
-    <input type="text" name="tags" placeholder="tags..." value="{{ SearchQuery }}" />
-    <input type="submit" value="SEARCH" />
-    <input type="button" value="CLEAR" onclick="this.form.reset(); window.location.href='/';" />
+    <h3>« Search Posts »</h3>
+    <input type="text" name="tags" placeholder="enter some tags..." value="{{ SearchQuery }}" />
+    <input type="submit" value="Search" />
+    <input type="button" value="Clear" onclick="this.form.reset();" />
+    <div class="rating-toggles">
+      <label class="rating-checkbox">
+        <input type="checkbox" name="rating" value="safe" checked />
+        <span class="checkbox-custom safe"></span>
+      </label>
+      <label class="rating-checkbox">
+        <input type="checkbox" name="rating" value="questionable" checked />
+        <span class="checkbox-custom questionable"></span>
+      </label>
+      <label class="rating-checkbox">
+        <input type="checkbox" name="rating" value="sensitive" checked />
+        <span class="checkbox-custom sensitive"></span>
+      </label>
+      <label class="rating-checkbox">
+        <input type="checkbox" name="rating" value="explicit" checked />
+        <span class="checkbox-custom explicit"></span>
+      </label>
+    </div>
   </form>
-</aside>
+</div>

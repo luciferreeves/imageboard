@@ -42,7 +42,7 @@ func main() {
 	processors.Initialize(app)
 
 	app.Use(middleware.JSON)
-	app.Static("/", "./static")
+	app.Static("/static", "./static")
 
 	router.Initialize(app)
 

@@ -7,7 +7,7 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: "LXGW WenKai Mono TC", monospace;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 body {
@@ -19,6 +19,9 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 a {
@@ -32,24 +35,23 @@ a:hover {
 }
 
 nav {
-    background: linear-gradient(to bottom, #330066, #1a001a);
-    padding: 8px 16px;
+    background-color: #0d001a;
+    padding: 16px 16px 16px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
-    border-bottom: 2px solid #ff99cc;
+    border-bottom: 1px solid #ff99cc;
 }
 
 nav::before {
     content: "✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧";
     position: absolute;
-    top: 2px;
+    top: 15px;
     left: 0;
     right: 0;
     text-align: center;
     color: #ffccee;
-    font-size: 12px;
 }
 
 .nav-left,
@@ -79,6 +81,7 @@ main {
     margin: 0 auto;
     gap: 10px;
     padding: 10px;
+    flex: 1;
 }
 
 .sidebar {
@@ -123,4 +126,158 @@ main {
 .tag-count,
 .sidebar-stat-value {
     color: #cccccc;
+}
+
+.content {
+    flex: 1;
+    background-color: #0a0015;
+    border: 1px solid #4d4d80;
+    padding: 10px;
+}
+
+.home-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 580px;
+}
+
+.home-main h1 {
+    color: #ffccff;
+    font-size: 16px;
+    margin: 8px 0px;
+}
+
+.home-main p {
+    color: #99ffcc;
+}
+
+.main-img {
+    max-width: 768px;
+    max-height: 576px;
+}
+
+.search-container {
+    background-color: #0d001a;
+    border: 1px solid #6666cc;
+    padding: 8px;
+    text-align: center;
+    margin-top: 16px;
+}
+
+.search-container form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+input[type="text"] {
+    background-color: #1a0033;
+    border: 1px solid #9999ff;
+    color: #ccccff;
+    padding: 2px 4px;
+    width: 250px;
+}
+
+input[type="text"]:focus {
+    border-color: #ff99cc;
+    background-color: #260040;
+    outline: none;
+}
+
+input[type="button"],
+input[type="submit"] {
+    background-color: #330066;
+    border: 1px solid #9999ff;
+    color: #ccccff;
+    padding: 3px 8px;
+    cursor: pointer;
+}
+
+input[type="button"]:hover,
+input[type="submit"]:hover {
+    background-color: #ff99cc;
+    color: #1a001a;
+}
+
+.rating-toggles {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.rating-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.rating-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #666;
+    background-color: #1a0033;
+    transition: all 0.2s ease;
+}
+
+.checkbox-custom.safe {
+    border-color: #388e3c;
+}
+
+.checkbox-custom.questionable {
+    border-color: #f57c00;
+}
+
+.checkbox-custom.sensitive {
+    border-color: #7b1fa2;
+}
+
+.checkbox-custom.explicit {
+    border-color: #d32f2f;
+}
+
+.rating-checkbox input[type="checkbox"]:checked+.checkbox-custom.safe {
+    background-color: #4caf50;
+    border-color: #388e3c;
+    border-width: 2px;
+}
+
+.rating-checkbox input[type="checkbox"]:checked+.checkbox-custom.questionable {
+    background-color: #ff9800;
+    border-color: #f57c00;
+    border-width: 2px;
+}
+
+.rating-checkbox input[type="checkbox"]:checked+.checkbox-custom.sensitive {
+    background-color: #9c27b0;
+    border-color: #7b1fa2;
+    border-width: 2px;
+}
+
+.rating-checkbox input[type="checkbox"]:checked+.checkbox-custom.explicit {
+    background-color: #f44336;
+    border-color: #d32f2f;
+    border-width: 2px;
+}
+
+footer {
+    background-color: #0d001a;
+    border-top: 1px solid #ff99cc;
+    padding: 10px 0 16px 0;
+    text-align: center;
+    color: #ccccff;
+    margin-top: 16px;
+}
+
+footer::before {
+    content: "✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦";
+    display: block;
+    color: #ffccee;
+    margin-bottom: 10px;
 }

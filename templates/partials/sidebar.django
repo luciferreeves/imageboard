@@ -32,7 +32,7 @@
 </div>
 
 <div>
-  <h3>★ Recent Tags</h3>
+  <h3>✧ Recent Tags</h3>
   <div class="sidebar-content">
     {% for tag in RecentTags %}
       <a href="/posts?tags={{ tag.Name }}" style="color: {{ tag.Type.Color }};" class="sidebar-tag">{{ tag.Name }} <span class="tag-count">({{ tag.Count }})</span></a>
