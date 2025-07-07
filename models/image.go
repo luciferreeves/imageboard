@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"imageboard/config"
+	"imageboard/utils/format"
 	"imageboard/utils/math"
 	"strings"
 
@@ -50,17 +51,7 @@ func (s *ImageSize) GetDimensions() string {
 }
 
 func (s *ImageSize) GetFileSizeFormatted() string {
-	const unit = 1024
-	if s.FileSize < unit {
-		return fmt.Sprintf("%d B", s.FileSize)
-	}
-	div, exp := int64(unit), 0
-	for n := s.FileSize / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-
-	return fmt.Sprintf("%.2f %sB", float64(s.FileSize)/float64(div), "KMGTPE"[exp:exp+1])
+	return format.FileSize(s.FileSize)
 }
 
 type Image struct {

@@ -1,0 +1,44 @@
+<div>
+  <h3>♡ Popular Tags</h3>
+  <div class="sidebar-content">
+    {% for tag in PopularTags %}
+      <a href="/posts?tags={{ tag.Name }}" style="color: {{ tag.Type.Color }};" class="sidebar-tag">{{ tag.Name }} <span class="tag-count">({{ tag.Count }})</span></a>
+    {% endfor %}
+    {% if not PopularTags %}
+      <p>No popular tags found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div>
+  <h3>☆ Site Stats</h3>
+  <div class="sidebar-content">
+    <p class="sidebar-stat">
+      Posts: <span class="sidebar-stat-value">{{ SiteStats.Posts }}</span>
+    </p>
+    <p class="sidebar-stat">
+      Tags: <span class="sidebar-stat-value">{{ SiteStats.Tags }}</span>
+    </p>
+    <p class="sidebar-stat">
+      Today: <span class="sidebar-stat-value">{{ SiteStats.Today }}</span>
+    </p>
+    <p class="sidebar-stat">
+      Storage: <span class="sidebar-stat-value">{{ SiteStats.Storage }}</span>
+    </p>
+    <p class="sidebar-stat">
+      Comments: <span class="sidebar-stat-value">{{ SiteStats.Comments }}</span>
+    </p>
+  </div>
+</div>
+
+<div>
+  <h3>★ Recent Tags</h3>
+  <div class="sidebar-content">
+    {% for tag in RecentTags %}
+      <a href="/posts?tags={{ tag.Name }}" style="color: {{ tag.Type.Color }};" class="sidebar-tag">{{ tag.Name }} <span class="tag-count">({{ tag.Count }})</span></a>
+    {% endfor %}
+    {% if not RecentTags %}
+      <p>No recent tags found.</p>
+    {% endif %}
+  </div>
+</div>

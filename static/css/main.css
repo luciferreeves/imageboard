@@ -1,374 +1,126 @@
-:root {
-    --bg-main: #ffffff;
-    --bg-section: #f8f8f8;
-    --bg-nav: #e0e0e0;
-    --text-main: #000000;
-    --text-dim: #666666;
-    --text-active: #ff0000;
-    --link-default: #0000ee;
-    --link-visited: #551a8b;
-    --link-hover: #ff0000;
-    --border-main: #c0c0c0;
-    --border-dark: #808080;
-    --button-bg: #e0e0e0;
-    --button-shadow: #808080;
-    --input-bg: #ffffff;
-    --error-bg: #ffe0e0;
-    --error-border: #ff0000;
-    --success-bg: #e0ffe0;
-    --success-border: #00aa00;
-}
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC:wght@400;700&display=swap');
 
-[data-theme="dark"] {
-    --bg-main: #000000;
-    --bg-section: #1a1a1a;
-    --bg-nav: #333333;
-    --text-main: #c0c0c0;
-    --text-dim: #808080;
-    --text-active: #ff6666;
-    --link-default: #6699ff;
-    --link-visited: #cc99ff;
-    --link-hover: #ffff66;
-    --border-main: #666666;
-    --border-dark: #999999;
-    --button-bg: #404040;
-    --button-shadow: #202020;
-    --input-bg: #1a1a1a;
-    --error-bg: #330000;
-    --error-border: #ff6666;
-    --success-bg: #003300;
-    --success-border: #66ff66;
-}
-
-* {
+*,
+html,
+body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "LXGW WenKai Mono TC", monospace;
+    font-size: 14px;
 }
 
 body {
-    font-family: "MS Gothic", "ＭＳ ゴシック", "Courier New", monospace;
-    font-size: 12px;
-    line-height: 1.2;
-    background: var(--bg-main);
-    color: var(--text-main);
-    width: 800px;
-    margin: 0 auto;
-}
-
-nav {
-    background: var(--bg-nav);
-    border: 2px outset var(--border-main);
-    padding: 6px 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-nav div {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-nav a {
-    color: var(--link-default);
-    text-decoration: underline;
-    font-size: 12px;
-    font-weight: normal;
-}
-
-nav a:visited {
-    color: var(--link-visited);
-}
-
-nav a:hover {
-    color: var(--link-hover);
-}
-
-nav a.active {
-    color: var(--text-active);
-    font-weight: bold;
-    text-decoration: none;
-}
-
-main {
-    padding: 8px;
-    min-height: 400px;
-}
-
-h1 {
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 12px;
-    color: var(--text-main);
-}
-
-h2 {
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: var(--text-main);
-}
-
-h3,
-h4 {
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 6px;
-    color: var(--text-main);
-}
-
-form {
-    margin: 8px 0;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-    font-size: 12px;
-    margin: 4px 0 2px 0;
-    color: var(--text-main);
-}
-
-input,
-textarea,
-select {
-    background: var(--input-bg);
-    color: var(--text-main);
-    border: 2px inset var(--border-main);
-    font-family: inherit;
-    font-size: 12px;
-    padding: 2px 4px;
-    margin-bottom: 6px;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"],
-textarea {
-    width: 180px;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    width: auto;
-    margin-right: 4px;
-}
-
-button,
-input[type="submit"] {
-    background: var(--button-bg);
-    color: var(--text-main);
-    border: 2px outset var(--border-main);
-    font-family: inherit;
-    font-size: 12px;
-    padding: 3px 8px;
-    cursor: pointer;
-    margin: 2px 4px 2px 0;
-}
-
-button:hover,
-input[type="submit"]:hover {
-    background: var(--bg-section);
-}
-
-button:active,
-input[type="submit"]:active {
-    border: 2px inset var(--border-main);
-}
-
-.posts-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-    margin: 8px 0;
-}
-
-article {
-    background: var(--bg-section);
-    border: 1px solid var(--border-main);
-    padding: 4px;
-    text-align: center;
-}
-
-article img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border: 1px solid var(--border-dark);
-    margin-bottom: 4px;
-}
-
-article h4 {
-    font-size: 11px;
-    font-weight: bold;
-    margin: 2px 0;
-    color: var(--text-main);
-}
-
-article p {
-    font-size: 10px;
-    color: var(--text-dim);
-    margin: 1px 0;
-}
-
-aside {
-    background: var(--bg-section);
-    border: 2px inset var(--border-main);
-    padding: 6px;
-    margin: 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-aside input[type="text"] {
-    flex: 1;
-    margin-bottom: 0;
-}
-
-.empty-state {
-    background: var(--bg-section);
-    border: 2px inset var(--border-main);
-    padding: 24px;
-    text-align: center;
-    margin: 12px 0;
-}
-
-.empty-state h3 {
-    color: var(--text-main);
-    margin-bottom: 8px;
-}
-
-.error-message,
-.error {
-    background: var(--error-bg);
-    color: var(--text-main);
-    border: 1px solid var(--error-border);
-    padding: 6px;
-    margin: 6px 0;
-    text-align: center;
-}
-
-.success-message,
-.success {
-    background: var(--success-bg);
-    color: var(--text-main);
-    border: 1px solid var(--success-border);
-    padding: 6px;
-    margin: 6px 0;
-    text-align: center;
-}
-
-footer {
-    background: var(--bg-nav);
-    border: 2px outset var(--border-main);
-    padding: 8px;
-    text-align: center;
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 16px;
-}
-
-footer p {
-    margin: 1px 0;
+    background-color: #000033;
+    background-image:
+        radial-gradient(circle at 25% 25%, #1a0033 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, #001a33 0%, transparent 50%);
+    color: #ccccff;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 a {
-    color: var(--link-default);
-    text-decoration: underline;
-}
-
-a:visited {
-    color: var(--link-visited);
+    color: #99ccff;
+    text-decoration: none;
 }
 
 a:hover {
-    color: var(--link-hover);
+    color: #99ffcc;
+    text-decoration: underline;
 }
 
-p {
-    margin: 4px 0;
-    line-height: 1.3;
-}
-
-small {
-    font-size: 10px;
-    color: var(--text-dim);
-}
-
-.button-group {
-    margin: 8px 0;
+nav {
+    background: linear-gradient(to bottom, #330066, #1a001a);
+    padding: 8px 16px;
     display: flex;
-    gap: 4px;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    border-bottom: 2px solid #ff99cc;
 }
 
-section {
-    background: var(--bg-section);
-    border: 2px inset var(--border-main);
-    padding: 12px;
-    margin: 12px 0;
-}
-
-section h2 {
+nav::before {
+    content: "✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧";
+    position: absolute;
+    top: 2px;
+    left: 0;
+    right: 0;
     text-align: center;
-    margin-bottom: 12px;
-    color: var(--text-main);
-}
-
-.center {
-    text-align: center;
-}
-
-/* Form Elements */
-fieldset {
-    background: var(--bg-section);
-    border: 2px inset var(--border-main);
-    padding: 12px;
-    margin: 8px 0;
-}
-
-legend {
-    font-weight: bold;
+    color: #ffccee;
     font-size: 12px;
-    color: var(--text-main);
-    padding: 0 4px;
-    background: var(--bg-main);
 }
 
-.form-group {
-    margin: 8px 0;
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
-.form-group label {
-    display: block;
+.nav-title {
+    color: #ffccff;
     font-weight: bold;
-    font-size: 12px;
-    margin: 4px 0 2px 0;
-    color: var(--text-main);
 }
 
-.form-group small {
-    display: block;
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 2px;
+.nav-title:hover {
+    color: #ff99ff;
+    text-decoration: none;
 }
 
-.form-actions {
-    margin: 12px 0 8px 0;
+.user-status {
+    color: #ccffcc;
+}
+
+main {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 10px;
+    padding: 10px;
+}
+
+.sidebar {
+    width: 180px;
+    background-color: #0d0020;
+    border: 1px solid #4d4d80;
+    padding: 8px;
+    height: fit-content;
+}
+
+.sidebar h3 {
+    background: linear-gradient(to right, #330066, #1a0033);
+    color: #ffccff;
+    margin: 0 0 8px 0;
+    padding: 4px;
     text-align: center;
+    border: 1px solid #ff99cc;
+    font-weight: bold;
 }
 
-.radio-group div {
-    margin: 4px 0;
+.sidebar div:not(:first-child) h3 {
+    margin-top: 16px;
 }
 
-.radio-group label {
-    display: inline;
-    font-weight: normal;
-    margin-left: 4px;
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-tag:hover {
+    text-decoration: none;
+    filter: brightness(1.3);
+}
+
+.sidebar-tag::before,
+.sidebar-stat::before {
+    content: "»";
+    margin: 0px 8px;
+}
+
+.tag-count,
+.sidebar-stat-value {
+    color: #cccccc;
 }

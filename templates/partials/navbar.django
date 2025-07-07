@@ -1,23 +1,24 @@
 <nav>
   <div class="nav-left">
-    <a href="/">{{ Appname }}</a>
-    <a href="/" class="{% if request.path == '/' %}active{% endif %}">POSTS</a>
-    <a href="/comments" class="{% if request.path == '/comments' %}active{% endif %}">COMMENTS</a>
-    <a href="/tags" class="{% if request.path == '/tags' %}active{% endif %}">TAGS</a>
-    {% if User %}{% if User.IsAdmin %}
-      <a href="/users" class="{% if request.path == '/users' %}active{% endif %}">USERS</a>
-    {% endif %}{% endif %}
+    <a href="/" class="nav-title">★彡 {{ Appname }} 彡★</a>
+    <a href="/posts">Posts</a>
+    <a href="/comments">Comments</a>
+    <a href="/tags">Tags</a>
+    {% if User and User.IsJanitor %}
+      <a href="/users">Users</a>
+    {% endif %}
   </div>
 
   <div class="nav-right">
     {% if User %}
-      <a href="/account">{{ User.Username }}</a>
-      <a href="/preferences" class="{% if request.path == '/preferences' %}active{% endif %}">⚙</a>
-      <a href="/logout">LOGOUT</a>
+      <a href="/account" class="user-status">{{ User.Username }}</a>
+      <a href="/logout">Logout</a>
     {% else %}
-      <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">LOGIN</a>
-      <a href="/register" class="{% if request.path == '/register' %}active{% endif %}">REGISTER</a>
-      <a href="/preferences" class="{% if request.path == '/preferences' %}active{% endif %}">⚙</a>
+      <span class="user-status">Guest</span>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
     {% endif %}
+    <a href="/preferences">Preferences</a>
+    <a href="/help">Help</a>
   </div>
 </nav>

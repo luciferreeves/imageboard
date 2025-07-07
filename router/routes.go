@@ -7,10 +7,16 @@ import (
 )
 
 func Initialize(router *fiber.App) {
-	router.Get("/", controllers.PostsController)
-	router.Get("/register", controllers.RegisterController)
-	router.Get("/login", controllers.LoginController)
-	router.Get("/preferences", controllers.PreferencesController)
+	main := router.Group("/")
+	main.Get("/", controllers.HomeController)
+
+	posts := router.Group("/posts")
+	posts.Get("/", controllers.PostsController)
+
+	// router.Get("/posts", controllers.PostsController)
+	// router.Get("/register", controllers.RegisterController)
+	// router.Get("/login", controllers.LoginController)
+	// router.Get("/preferences", controllers.PreferencesController)
 
 	router.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{

@@ -1,0 +1,5 @@
+{% extends 'layouts/main.django' %}
+{% include 'partials/search.django' %}
+{% block content %}
+  <h2>{{ Title }}</h2>
+{% endblock %}

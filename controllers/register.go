@@ -8,6 +8,5 @@ import (
 
 func RegisterController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", "Register")
-	ctx.Locals("request", fiber.Map{"path": ctx.Path()})
 	return shortcuts.Render(ctx, "register", nil)
 }

@@ -7,17 +7,19 @@
   </head>
   <body>
     {% include 'partials/navbar.django' %}
-
     <main>
-      {% block content %}
+      <aside class="sidebar">
+        {% include 'partials/sidebar.django' %}
+      </aside>
+      <section class="content">
+        {% block content %}
 
-      {% endblock %}
+        {% endblock %}
+      </section>
     </main>
 
     <footer>
       <p>&copy; 2025 {{ Appname }}. All rights reserved.</p>
     </footer>
-
-    <script src="/scripts/theme.js"></script>
   </body>
 </html>
