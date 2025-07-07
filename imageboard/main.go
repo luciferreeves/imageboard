@@ -8,6 +8,8 @@ import (
 	"imageboard/router"
 	"log"
 
+	_ "imageboard/database"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -17,7 +19,7 @@ import (
 )
 
 func main() {
-	if config.Server.AppSecret == "default_secret" {
+	if config.Server.AppSecret == config.Defaults(&config.Server).AppSecret {
 		log.Println("Warning: AppSecret is set to a default value which is not secure. Please set a strong random secret in your APP_SECRET environment variable or .env file.")
 	}
 

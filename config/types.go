@@ -12,12 +12,13 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host         string `env:"DB_HOST" default:"localhost"`
-	Port         int    `env:"DB_PORT" default:"5432"`
-	Username     string `env:"DB_USERNAME" default:"postgres"`
-	Password     string `env:"DB_PASSWORD" default:""`
-	DatabaseName string `env:"DB_NAME" default:"imageboard"`
-	SSLMode      string `env:"DB_SSLMODE" default:"disable"`
+	Host                 string `env:"DB_HOST" default:"localhost"`
+	Port                 int    `env:"DB_PORT" default:"5432"`
+	Username             string `env:"DB_USERNAME" default:"postgres"`
+	Password             string `env:"DB_PASSWORD" default:""`
+	DatabaseName         string `env:"DB_NAME" default:"imageboard"`
+	SSLMode              string `env:"DB_SSLMODE" default:"disable"`
+	WipeAndResetDatabase bool   `env:"DB_WIPE_AND_RESET" default:"false"`
 }
 
 type SessionConfig struct {
