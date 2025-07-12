@@ -1,5 +1,5 @@
 function validateCSSFieldValue(value) {
-    const validCSSValuePattern = /^(auto|(\d+(\.\d+)?px|em|rem|%)|calc\(.+\))$/;
+    const validCSSValuePattern = /^(auto|(\d+(\.\d+)?(px|em|rem|%)?)|calc\(.+\))$/;
     return validCSSValuePattern.test(value);
 }
 
