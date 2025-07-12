@@ -175,7 +175,9 @@ main {
     align-items: center;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
     background-color: #1a0033;
     border: 1px solid #9999ff;
     color: #ccccff;
@@ -183,7 +185,9 @@ input[type="text"] {
     width: 250px;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
     border-color: #ff99cc;
     background-color: #260040;
     outline: none;
@@ -282,4 +286,68 @@ footer::before {
     display: block;
     color: #ffccee;
     margin-bottom: 10px;
+}
+
+.bordered-box {
+    border: 1px solid #4d4d80;
+    padding: 8px;
+}
+
+.bordered-box hr {
+    border: 1px solid #4d4d80;
+    margin: 8px 0;
+}
+
+
+
+.ibform {
+    background-color: #0d001a;
+    border: 1px solid #ff99cc;
+    padding: 8px;
+    margin: 16px auto;
+}
+
+.fgroup {
+    border: 1px dashed #4d4d80;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.fg-main {
+    display: flex;
+    min-width: 128px;
+}
+
+.fg-sub {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fg-sub small {
+    color: #ff99cc;
+    font-size: 11px;
+}
+
+.fg-main label {
+    color: #ffccff;
+    font-weight: bold;
+
+}
+
+.fg-sub input {
+    border-style: double;
+    border-width: 3px;
+    border-color: #9999ff;
+    width: 100%;
+}
+
+.fbtngrp {
+    margin: 8px 0 0 0;
+}
+
+.fbtngrp input {
+    padding: 4px 8px;
 }

@@ -8,15 +8,12 @@ import (
 
 func Initialize(router *fiber.App) {
 	main := router.Group("/")
-	main.Get("/", controllers.HomeController)
+	main.Get("/", controllers.HomePageController)
+	main.Get("/login", controllers.LoginPageController)
+	main.Get("/register", controllers.RegisterPageController)
 
 	posts := router.Group("/posts")
 	posts.Get("/", controllers.PostsController)
-
-	// router.Get("/posts", controllers.PostsController)
-	// router.Get("/register", controllers.RegisterController)
-	// router.Get("/login", controllers.LoginController)
-	// router.Get("/preferences", controllers.PreferencesController)
 
 	router.Use(controllers.NotFoundController)
 }

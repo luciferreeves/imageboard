@@ -1,45 +1,57 @@
 {% extends 'layouts/main.django' %}
 
 {% block content %}
-  <h2>Join {{ Appname }}</h2>
-
-  {% if Error %}
-    <div class="error">{{ Error }}</div>
-  {% endif %}
-
-  <form action="/register" method="POST">
-    <fieldset>
-      <legend>Create Account</legend>
-
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required value="{{ Username }}" minlength="3" maxlength="72" pattern="[a-zA-Z0-9_-]+" />
-        <small>3-72 characters, letters, numbers, underscores, and hyphens only</small>
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required value="{{ Email }}" />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required minlength="8" />
-        <small>Minimum 8 characters</small>
-      </div>
-
-      <div class="form-group">
-        <label for="confirm_password">Confirm Password</label>
-        <input type="password" id="confirm_password" name="confirm_password" required />
-      </div>
-
-      <div class="form-actions">
-        <button type="submit">CREATE ACCOUNT</button>
-      </div>
-    </fieldset>
-  </form>
-
-  <p>
-    Already have an account? <a href="/login">Login here</a>
-  </p>
+  <div class="centered-main">
+    <div class="bordered-box">
+      <img src="/static/images/1c8fcc330ea1e971440cd3bdb8993a81.webp" alt="Register Image" class="register-img" />
+      <h1>Join {{ Appname }}</h1>
+      <p>Create your account to start sharing and exploring images!</p>
+      {% if Error %}
+        <div class="error">{{ Error }}</div>
+      {% endif %}
+      <form action="/register" method="POST" class="ibform">
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="username">Username</label>
+          </div>
+          <div class="fg-sub">
+            <input type="text" id="username" name="username" required value="{{ Username }}" minlength="3" maxlength="72" autocomplete="username" pattern="[a-zA-Z0-9_-]+" />
+            <small>3-72 characters, letters, numbers, underscores, and hyphens only</small>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="email">Email Address</label>
+          </div>
+          <div class="fg-sub">
+            <input type="email" id="email" name="email" required value="{{ Email }}" />
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="password">Password</label>
+          </div>
+          <div class="fg-sub">
+            <input type="password" id="password" name="password" required minlength="8" />
+            <small>Minimum 8 characters</small>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="confirm_password">Confirm Password</label>
+          </div>
+          <div class="fg-sub">
+            <input type="password" id="confirm_password" name="confirm_password" required />
+          </div>
+        </div>
+        <div class="fbtngrp">
+          <input type="submit" value="Create Account" />
+          <input type="button" value="Clear" onclick="this.form.reset();" />
+        </div>
+      </form>
+      <p>
+        Already have an account? <a href="/login">Login here</a>
+      </p>
+    </div>
+  </div>
 {% endblock %}

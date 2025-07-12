@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func RegisterController(ctx *fiber.Ctx) error {
+func RegisterPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", "Register")
 	return shortcuts.Render(ctx, "register", nil)
 }
