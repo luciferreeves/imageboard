@@ -351,3 +351,7 @@ footer::before {
 .fbtngrp input {
     padding: 4px 8px;
 }
+
+.q-img {
+    max-width: 768px;
+}

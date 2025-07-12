@@ -3,7 +3,7 @@
 {% block content %}
   <div class="centered-main">
     <div class="bordered-box">
-      <img src="/static/images/25631a9833b39de4053f9eed8b2d3ae6.webp" alt="Login Image" class="register-img" />
+      <img src="/static/images/25631a9833b39de4053f9eed8b2d3ae6.webp" alt="Login Image" class="q-img" />
       <h1>Login to {{ Appname }}</h1>
       <p>Welcome back! Please enter your credentials to continue.</p>
       {% if Error %}

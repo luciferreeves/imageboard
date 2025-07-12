@@ -3,7 +3,7 @@
 {% block content %}
   <div class="centered-main">
     <div class="bordered-box">
-      <img src="/static/images/1c8fcc330ea1e971440cd3bdb8993a81.webp" alt="Register Image" class="register-img" />
+      <img src="/static/images/1c8fcc330ea1e971440cd3bdb8993a81.webp" alt="Register Image" class="q-img" />
       <h1>Join {{ Appname }}</h1>
       <p>Create your account to start sharing and exploring images!</p>
       {% if Error %}
