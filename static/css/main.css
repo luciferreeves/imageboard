@@ -18,10 +18,10 @@ body {
     color: #ccccff;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    min-width: 1200px;
 }
 
 a {
@@ -137,7 +137,7 @@ main {
     padding: 10px;
 }
 
-.home-main {
+.centered-main {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -146,13 +146,13 @@ main {
     min-height: 580px;
 }
 
-.home-main h1 {
+.centered-main h1 {
     color: #ffccff;
     font-size: 16px;
     margin: 8px 0px;
 }
 
-.home-main p {
+.centered-main p {
     color: #99ffcc;
 }
 
