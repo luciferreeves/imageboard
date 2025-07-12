@@ -7,7 +7,6 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: "LXGW WenKai Mono TC", monospace;
-    font-size: 13px;
 }
 
 body {
@@ -79,7 +78,6 @@ nav::before {
 
 main {
     display: flex;
-    width: 1200px;
     margin: 0 auto;
     gap: 10px;
     padding: 10px;
@@ -87,7 +85,6 @@ main {
 }
 
 .sidebar {
-    width: 180px;
     background-color: #0d0020;
     border: 1px solid #4d4d80;
     padding: 8px;
@@ -148,8 +145,12 @@ main {
 
 .centered-main h1 {
     color: #ffccff;
-    font-size: 16px;
     margin: 8px 0px;
+}
+
+.content-main h1 {
+    color: #ff99cc;
+    margin-bottom: 8px;
 }
 
 .centered-main p {
@@ -177,7 +178,8 @@ main {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="number"] {
     background-color: #1a0033;
     border: 1px solid #9999ff;
     color: #ccccff;
@@ -187,7 +189,8 @@ input[type="password"] {
 
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="number"]:focus {
     border-color: #ff99cc;
     background-color: #260040;
     outline: none;
@@ -298,8 +301,6 @@ footer::before {
     margin: 8px 0;
 }
 
-
-
 .ibform {
     background-color: #0d001a;
     border: 1px solid #ff99cc;
@@ -328,7 +329,6 @@ footer::before {
 
 .fg-sub small {
     color: #ff99cc;
-    font-size: 11px;
 }
 
 .fg-main label {
@@ -354,4 +354,14 @@ footer::before {
 
 .q-img {
     max-width: 768px;
+}
+
+.error {
+    color: #ffccff;
+    background-color: #330000;
+    border: 1px solid #ff0000;
+    padding: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+    display: none;
 }

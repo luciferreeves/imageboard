@@ -40,8 +40,8 @@ func main() {
 	app.Use(cors.New())
 
 	processors.Initialize(app)
+	middleware.Initialize(app)
 
-	app.Use(middleware.JSON)
 	app.Static("/static", "./static")
 
 	router.Initialize(app)

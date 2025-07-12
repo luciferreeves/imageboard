@@ -1,33 +1,72 @@
 {% extends 'layouts/main.django' %}
 
 {% block content %}
-  <h2>Site Preferences</h2>
-
-  <form id="preferences-form">
-    <fieldset>
-      <legend>Theme Settings</legend>
-
-      <div class="form-group">
-        <label>Theme</label>
-        <div class="radio-group">
-          <div>
-            <input type="radio" name="theme" value="light" id="theme-light" />
-            <label for="theme-light">Light Mode</label>
-          </div>
-          <div>
-            <input type="radio" name="theme" value="dark" id="theme-dark" />
-            <label for="theme-dark">Dark Mode</label>
-          </div>
+  <div class="content-main">
+    <h1>Site Preferences</h1>
+    <p>Customize your experience on {{ Appname }}. These settings are stored in your cookies and will persist across sessions. However, they are not coupled with your account, so they don't apply to other devices or browsers.</p>
+    <form action="javascript:setPreferences()" method="post" class="ibform">
+      <div class="error" id="error-message"></div>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="sidebar-width">Sidebar Width</label>
+        </div>
+        <div class="fg-sub">
+          <input type="text" id="sidebar-width" name="sidebar-width" value="{{ Preferences.SidebarWidth }}" placeholder="e.g., 250px" />
+          <small>Set the width of the sidebar. Use CSS units like px, em, or %.</small>
         </div>
       </div>
-
-      <div class="form-actions">
-        <button type="submit">SAVE PREFERENCES</button>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="main-width">Main Content Width</label>
+        </div>
+        <div class="fg-sub">
+          <input type="text" id="main-width" name="main-width" value="{{ Preferences.MainContentWidth }}" placeholder="e.g., 800px" />
+          <small>Set the width of the main content area. Use CSS units like px, em, or %.</small>
+        </div>
       </div>
-    </fieldset>
-  </form>
-
-  <p>
-    <a href="/">Back to Posts</a>
-  </p>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="h1-font-size">H1 Font Size</label>
+        </div>
+        <div class="fg-sub">
+          <input type="text" id="h1-font-size" name="h1-font-size" value="{{ Preferences.H1FontSize }}" min="10" max="100" />
+          <small>Set the font size for H1 elements. This will affect the main headings across the site. Use a valid CSS size (e.g., 16px, 1.5em, etc.).</small>
+        </div>
+      </div>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="body-font-size">Body Font Size</label>
+        </div>
+        <div class="fg-sub">
+          <input type="text" id="body-font-size" name="body-font-size" value="{{ Preferences.BodyFontSize }}" min="10" max="100" />
+          <small>Set the font size for body text. This will affect the readability of the content across the site. Use a valid CSS size (e.g., 13px, 1em, etc.).</small>
+        </div>
+      </div>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="small-font-size">Small Font Size</label>
+        </div>
+        <div class="fg-sub">
+          <input type="text" id="small-font-size" name="small-font-size" value="{{ Preferences.SmallFontSize }}" min="8" max="50" />
+          <small>Set the font size for small text elements. This will affect the visibility of smaller text across the site. Use a valid CSS size (e.g., 11px, 0.8em, etc.).</small>
+        </div>
+      </div>
+      <div class="fgroup">
+        <div class="fg-main">
+          <label for="posts-per-page">Posts Per Page</label>
+        </div>
+        <div class="fg-sub">
+          <input type="number" id="posts-per-page" name="posts-per-page" value="{{ Preferences.PostsPerPage }}" min="1" max="100" />
+          <small>Set the number of posts displayed per page. This can help manage load times</small>
+        </div>
+      </div>
+      <div class="fbtngrp">
+        <input type="submit" value="Save Preferences" />
+        <input type="button" value="Reset to Default" onclick="resetPreferences()" />
+      </div>
+    </form>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="/static/scripts/preferences.js" type="text/javascript"></script>
 {% endblock %}
