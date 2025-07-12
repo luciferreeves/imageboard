@@ -1,7 +1,7 @@
 {% extends 'layouts/main.django' %}
 {% block content %}
   <div class="home-main">
-    <img src="/static/images/image_main.png" alt="Main Image" class="main-img" />
+    <img src="/static/images/opwevhieia8ikwltpfgf.webp" alt="Main Image" class="main-img" />
     <h1>Welcome to {{ Appname }}!</h1>
     <p>～ 個人的な画像ボード ～</p>
     {% include 'partials/search.django' %}
