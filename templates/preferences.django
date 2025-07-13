@@ -5,7 +5,7 @@
     <h1>Site Preferences</h1>
     <p>Customize your experience on {{ Appname }}. These settings are stored in your cookies and will persist across sessions. However, they are not coupled with your account, so they don't apply to other devices or browsers.</p>
     <form action="javascript:setPreferences()" method="post" class="ibform">
-      <div class="error" id="error-message"></div>
+      <div class="error" style="display: none;" id="error-message"></div>
       <div class="fgroup">
         <div class="fg-main">
           <label for="sidebar-width">Sidebar Width</label>
@@ -57,7 +57,7 @@
         </div>
         <div class="fg-sub">
           <input type="number" id="posts-per-page" name="posts-per-page" value="{{ Preferences.PostsPerPage }}" min="1" max="100" />
-          <small>Set the number of posts displayed per page. This can help manage load times</small>
+          <small>Set the number of posts displayed per page. This can help manage load times.</small>
         </div>
       </div>
       <div class="fbtngrp">

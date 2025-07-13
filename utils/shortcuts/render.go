@@ -31,6 +31,11 @@ func Render(ctx *fiber.Ctx, name string, bind any) error {
 	return ctx.Render(name, finalData)
 }
 
+func RenderWithStatus(ctx *fiber.Ctx, name string, bind any, statusCode int) error {
+	ctx.Status(statusCode)
+	return Render(ctx, name, bind)
+}
+
 func structToMap(obj any) map[string]any {
 	result := make(map[string]any)
 

@@ -6,10 +6,10 @@
       <img src="/static/images/25631a9833b39de4053f9eed8b2d3ae6.webp" alt="Login Image" class="q-img" />
       <h1>Login to {{ Appname }}</h1>
       <p>Welcome back! Please enter your credentials to continue.</p>
-      {% if Error %}
-        <div class="error">{{ Error }}</div>
-      {% endif %}
       <form action="/login" method="POST" class="ibform">
+        {% if Error %}
+          <div class="error">{{ Error|safe }}</div>
+        {% endif %}
         <div class="fgroup">
           <div class="fg-main">
             <label for="username">Username</label>
@@ -29,7 +29,8 @@
         </div>
         <div class="fbtngrp">
           <input type="submit" value="Login" />
-          <input type="button" value="Reset" />
+          <input type="button" value="Clear" onclick="this.form.reset();" />
+          <input type="button" value="Forgot Password?" onclick="window.location.href='/accounts/forgot-password';" />
         </div>
       </form>
       <p class="text-center">

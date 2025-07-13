@@ -9,6 +9,7 @@ type ServerConfig struct {
 	AppSecret         string `env:"APP_SECRET" default:"default_secret"`
 	IsDevMode         bool   `env:"DEV_MODE" default:"true"`
 	MinPasswordLength int    `env:"MIN_PASSWORD_LENGTH" default:"8"`
+	AdminEmail        string `env:"ADMIN_EMAIL" default:""`
 }
 
 type DatabaseConfig struct {
