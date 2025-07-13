@@ -64,6 +64,7 @@ func autoMigrate() error {
 		&models.ImageSize{},
 		&models.Tag{},
 		&models.Comment{},
+		&models.EmailToken{},
 	)
 }
 

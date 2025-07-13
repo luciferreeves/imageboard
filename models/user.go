@@ -72,12 +72,26 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 
 	var userCount int64
 	if err := tx.Model(&User{}).Where("is_deleted = ?", false).Count(&userCount).Error; err != nil {
-		return err
+		return fmt.Errorf("failed to count existing users: %v", err)
 	}
 
 	if userCount == 0 {
 		u.Level = UserLevelSuperAdmin // First user becomes Super Admin
 	}
+
+	if len(u.Password) < config.Server.MinPasswordLength {
+		return fmt.Errorf("password must be at least %d characters long", config.Server.MinPasswordLength)
+	}
+	if len(u.Password) > 255 {
+		return fmt.Errorf("password must not exceed 255 characters")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(hashedPassword)
 
 	return nil
 }
@@ -93,16 +107,13 @@ func (u *User) SetPassword(password string) error {
 	if len(password) < config.Server.MinPasswordLength {
 		return fmt.Errorf("password must be at least %d characters long", config.Server.MinPasswordLength)
 	}
-
 	if len(password) > 255 {
 		return fmt.Errorf("password must not exceed 255 characters")
 	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-
 	u.Password = string(hashedPassword)
 	return nil
 }

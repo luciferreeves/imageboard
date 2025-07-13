@@ -6,6 +6,7 @@ type ServerConfig struct {
 	Host              string `env:"SERVER_HOST" default:"localhost"`
 	Port              int    `env:"SERVER_PORT" default:"8080"`
 	AppName           string `env:"APP_NAME" default:"ImageBoard"`
+	AppBaseURL        string `env:"APP_BASE_URL" default:"http://localhost:8080"`
 	AppSecret         string `env:"APP_SECRET" default:"default_secret"`
 	IsDevMode         bool   `env:"DEV_MODE" default:"true"`
 	MinPasswordLength int    `env:"MIN_PASSWORD_LENGTH" default:"8"`

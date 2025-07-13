@@ -364,3 +364,12 @@ footer::before {
     margin-bottom: 16px;
     text-align: center;
 }
+
+.success {
+    color: #ccffcc;
+    background-color: #003300;
+    border: 1px solid #00ff00;
+    padding: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}

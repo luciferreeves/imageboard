@@ -25,7 +25,6 @@ func init() {
 		Storage:        storage,
 		Expiration:     config.Session.Expiration,
 		KeyLookup:      "cookie:" + config.Session.CookieName,
-		CookieName:     config.Session.CookieName,
 		CookieDomain:   config.Session.CookieDomain,
 		CookiePath:     config.Session.CookiePath,
 		CookieSecure:   config.Session.CookieSecure,

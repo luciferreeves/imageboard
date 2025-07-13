@@ -3,17 +3,15 @@ package controllers
 import (
 	"imageboard/database"
 	"imageboard/session"
+	"imageboard/utils/auth"
 	"imageboard/utils/shortcuts"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func getRedirectURL(ctx *fiber.Ctx) string {
-	referer := ctx.Get("Referer")
-	if referer != "" && referer != ctx.BaseURL()+URL_LOGIN && referer != ctx.BaseURL()+URL_REGISTER {
-		return referer
-	}
-	return URL_HOME
+type LoginForm struct {
+	Username string `json:"username" form:"username"`
+	Password string `json:"password" form:"password"`
 }
 
 func renderLoginError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
@@ -25,11 +23,9 @@ func renderLoginError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
 
 func LoginPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", PT_LOGIN)
-	sess, err := session.Store.Get(ctx)
-	if err == nil {
-		if userID, ok := sess.Get("user_id").(int); ok && userID != 0 {
-			return ctx.Redirect(getRedirectURL(ctx), fiber.StatusSeeOther)
-		}
+
+	if auth.IsAuthenticated(ctx) {
+		return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
 	}
 
 	return shortcuts.Render(ctx, TEMPLATE_LOGIN, nil)
@@ -37,10 +33,6 @@ func LoginPageController(ctx *fiber.Ctx) error {
 
 func LoginPostController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", PT_LOGIN)
-	type LoginForm struct {
-		Username string `json:"username" form:"username"`
-		Password string `json:"password" form:"password"`
-	}
 
 	var form LoginForm
 	var err error
@@ -78,5 +70,5 @@ func LoginPostController(ctx *fiber.Ctx) error {
 	user.UpdateLastUserLogin(database.DB)
 	user.UpdateLastUserActivity(database.DB)
 
-	return ctx.Redirect(getRedirectURL(ctx), fiber.StatusSeeOther)
+	return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
 }

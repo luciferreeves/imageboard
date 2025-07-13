@@ -2,14 +2,17 @@
 
 {% block content %}
   <div class="centered-main">
-    <div class="bordered-box">
+    <div class="bordered-box" style="max-width: 786px;">
       <img src="/static/images/1c8fcc330ea1e971440cd3bdb8993a81.webp" alt="Register Image" class="q-img" />
       <h1>Join {{ Appname }}</h1>
       <p>Create your account to start sharing and exploring images!</p>
-      {% if Error %}
-        <div class="error">{{ Error }}</div>
-      {% endif %}
       <form action="/register" method="POST" class="ibform">
+        {% if Error %}
+          <div class="error">{{ Error|safe }}</div>
+        {% endif %}
+        {% if Success %}
+          <div class="success">{{ Success|safe }}</div>
+        {% endif %}
         <div class="fgroup">
           <div class="fg-main">
             <label for="username">Username</label>

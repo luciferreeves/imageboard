@@ -32,6 +32,10 @@ const (
 	ERR_LOGIN_INVALID_CREDENTIALS = `The credentials you provided are incorrect. Did you <a href="` + URL_FORGOT_PASSWORD + `">forget your password</a>?`
 	ERR_ACCOUNT_DISABLED          = `Your account is disabled or banned. You can reach out to support for assistance.`
 	ERR_ACCOUNT_UNABLE_TO_LOGIN   = `You cannot log in at this time. Verify your email or contact support. If you misplaced your verification email, you can <a href="` + URL_RESEND_VERIFICATION + `">request a new one</a>.`
-	ERR_SESSION_FAILED_TO_CREATE  = "Failed to create session. Please try again later."
-	ERR_SESSION_FAILED_TO_SAVE    = "Failed to save session. Please try again later."
+	ERR_PASSWORD_MISMATCH         = "Entered passwords do not match. Ensure both fields are identical."
+	ERR_SESSION_FAILED_TO_CREATE  = "Server failed to create a session. If this issue persists, contact support."
+	ERR_SESSION_FAILED_TO_SAVE    = "Server failed to save session data. If this issue persists, contact support."
+
+	// Success messages
+	SUCCESS_USER_REGISTERED = "Your account has been created successfully. A verification email has been sent to your email address. You will only be able to log in after verifying your email. If you did not receive the email, you can <a href=\"" + URL_RESEND_VERIFICATION + "\">request a new one</a>."
 )

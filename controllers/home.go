@@ -7,6 +7,6 @@ import (
 )
 
 func HomePageController(ctx *fiber.Ctx) error {
-	ctx.Locals("Title", "Home Page")
-	return shortcuts.Render(ctx, "home", nil)
+	ctx.Locals("Title", PT_HOME)
+	return shortcuts.Render(ctx, TEMPLATE_HOME, nil)
 }

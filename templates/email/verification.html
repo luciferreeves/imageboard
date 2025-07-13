@@ -1,0 +1,75 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify your email</title>
+    <style>
+      body {
+        background: #000033;
+        color: #ccccff;
+        font-family: monospace;
+        margin: 0;
+        padding: 0;
+        font-size: 13px;
+        text-align: justify;
+      }
+      .container {
+        background: #0d001a;
+        border: 1px solid #ff99cc;
+        max-width: 768px;
+        margin: 40px auto;
+        padding: 16px;
+      }
+      h1 {
+        color: #ffccff;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+      p {
+        color: #99ffcc;
+        line-height: 18px;
+      }
+      .verify-link {
+        display: inline-block;
+        background: #330066;
+        color: #ccffcc;
+        border: 1px solid #99ffcc;
+        padding: 10px 24px;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 12px auto;
+      }
+      .verify-link:hover {
+        background: #ff99cc;
+        color: #1a001a;
+        border-color: #ff99cc;
+      }
+      .footer {
+        color: #ffccff;
+        margin-top: 32px;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to {{ .Appname }}, {{ .Username }}!</h1>
+      <p>
+        Your account has been created successfully. To complete your
+        registration, you need to verify your email address by clicking the link
+        below:
+      </p>
+      <a class="verify-link" href="{{ .Link }}">Verify Email</a>
+      <p>
+        If you are unable to click the link, copy and paste it into your
+        browser:
+      </p>
+      <p>
+        <a href="{{ .Link }}">{{ .Link }}</a>
+      </p>
+      <div class="footer">
+        If you did not register for this account, you can ignore this email.
+      </div>
+    </div>
+  </body>
+</html>

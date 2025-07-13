@@ -9,8 +9,6 @@ import (
 func Initialize(router *fiber.App) {
 	main := router.Group("/")
 	main.Get("/", controllers.HomePageController)
-	main.Get("/register", controllers.RegisterPageController)
-	main.Get("/preferences", controllers.PreferencesPageController)
 
 	posts := router.Group("/posts")
 	posts.Get("/", controllers.PostsController)
@@ -18,6 +16,16 @@ func Initialize(router *fiber.App) {
 	login := router.Group("/login")
 	login.Get("/", controllers.LoginPageController)
 	login.Post("/", controllers.LoginPostController)
+
+	logout := router.Group("/logout")
+	logout.Get("/", controllers.LogoutController)
+
+	register := router.Group("/register")
+	register.Get("/", controllers.RegisterPageController)
+	register.Post("/", controllers.RegisterPostController)
+
+	preferences := router.Group("/preferences")
+	preferences.Get("/", controllers.PreferencesPageController)
 
 	router.Use(controllers.NotFoundController)
 }
