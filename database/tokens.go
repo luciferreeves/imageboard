@@ -46,9 +46,9 @@ func GenerateEmailToken(userID int, tokenType models.EmailTokenType) (*models.Em
 	return token, nil
 }
 
-func VerifyToken(userID int, token string, tokenType models.EmailTokenType) (*models.EmailToken, error) {
+func VerifyToken(token string, tokenType models.EmailTokenType) (*models.EmailToken, error) {
 	var emailToken models.EmailToken
-	if err := DB.Where("user_id = ? AND token = ? AND type = ?", userID, token, tokenType).First(&emailToken).Error; err != nil {
+	if err := DB.Where("token = ? AND type = ?", token, tokenType).First(&emailToken).Error; err != nil {
 		return nil, err
 	}
 

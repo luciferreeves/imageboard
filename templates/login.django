@@ -30,7 +30,7 @@
         <div class="fbtngrp">
           <input type="submit" value="Login" />
           <input type="button" value="Clear" onclick="this.form.reset();" />
-          <input type="button" value="Forgot Password?" onclick="window.location.href='/accounts/forgot-password';" />
+          <input type="button" value="Forgot Password?" onclick="window.location.href='/account/forgot-password';" />
         </div>
       </form>
       <p class="text-center">

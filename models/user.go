@@ -127,6 +127,13 @@ func (u *User) CheckPassword(password string) bool {
 	return err == nil
 }
 
+func (u *User) Activate() {
+	u.IsDeleted = false
+	u.AccountDisabled = false
+	u.AccountBanned = false
+	u.EmailVerified = true
+}
+
 func (u *User) IsActive() bool {
 	return !u.IsDeleted && !u.AccountDisabled && !u.AccountBanned
 }

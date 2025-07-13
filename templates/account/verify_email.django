@@ -1,0 +1,21 @@
+{% extends 'layouts/main.django' %}
+
+{% block content %}
+  <div class="centered-main">
+    {% if Error %}
+      <div class="error">
+        <h2>Email Verification Error</h2>
+        <br />
+        <p>{{ Error|safe }}</p>
+      </div>
+    {% endif %}
+
+    {% if Success %}
+      <div class="success">
+        <h2>Email Verified Successfully</h2>
+        <br />
+        <p>{{ Success|safe }}</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

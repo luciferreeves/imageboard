@@ -24,6 +24,9 @@ func Initialize(router *fiber.App) {
 	register.Get("/", controllers.RegisterPageController)
 	register.Post("/", controllers.RegisterPostController)
 
+	account := router.Group("/account")
+	account.Get("/verify", controllers.VerifyEmailController)
+
 	preferences := router.Group("/preferences")
 	preferences.Get("/", controllers.PreferencesPageController)
 
