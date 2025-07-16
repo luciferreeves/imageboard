@@ -68,5 +68,5 @@
   </div>
 {% endblock %}
 {% block scripts %}
-  <script src="/static/scripts/preferences.js" type="text/javascript"></script>
+  <script type="text/javascript" src="/static/scripts/preferences.js" defer></script>
 {% endblock %}

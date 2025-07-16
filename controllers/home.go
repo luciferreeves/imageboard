@@ -9,5 +9,12 @@ import (
 
 func HomePageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_HOME)
-	return shortcuts.Render(ctx, config.TEMPLATE_HOME, nil)
+	queryRatings := map[string]bool{
+		"safe":         true,
+		"questionable": true,
+		"sensitive":    true,
+	}
+	return shortcuts.Render(ctx, config.TEMPLATE_HOME, fiber.Map{
+		"QueryRatings": queryRatings,
+	})
 }

@@ -1,26 +1,34 @@
 <div class="search-container">
-  <form action="/" method="GET">
+  <form action="/posts" method="GET">
     <h3>« Search Posts »</h3>
-    <input type="text" name="tags" placeholder="enter some tags..." value="{{ SearchQuery }}" />
+    <input type="text" name="tags" class="search-tags-input" placeholder="enter some tags..." value="{{ QueryTags|default_if_none:'' }}" autocomplete="off" aria-label="Search tags" />
     <input type="submit" value="Search" />
-    <input type="button" value="Clear" onclick="this.form.reset();" />
+    <input type="button" value="Clear" onclick="this.form.tags.value='';" />
     <div class="rating-toggles">
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="safe" checked />
+        <input type="checkbox" name="rating" value="safe" {{ QueryRatings.safe|yesno:'checked,' }} />
         <span class="checkbox-custom safe"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="questionable" checked />
+        <input type="checkbox" name="rating" value="questionable" {{ QueryRatings.questionable|yesno:'checked,' }} />
         <span class="checkbox-custom questionable"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="sensitive" checked />
+        <input type="checkbox" name="rating" value="sensitive" {{ QueryRatings.sensitive|yesno:'checked,' }} />
         <span class="checkbox-custom sensitive"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="explicit" checked />
+        <input type="checkbox" name="rating" value="explicit" {{ QueryRatings.explicit|yesno:'checked,' }} />
         <span class="checkbox-custom explicit"></span>
       </label>
     </div>
+    <a href="/help" style="height: 24px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-help">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+        <path d="M12 17l0 .01" />
+        <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" />
+      </svg>
+    </a>
   </form>
 </div>

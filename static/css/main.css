@@ -167,7 +167,15 @@ main {
     border: 1px solid #6666cc;
     padding: 8px;
     text-align: center;
-    margin-top: 16px;
+}
+
+.search-container input[type="text"] {
+    width: 100%;
+    flex: 1;
+}
+
+.centered-main>.search-container {
+    width: 768px;
 }
 
 .search-container form {
@@ -183,8 +191,7 @@ input[type="number"] {
     background-color: #1a0033;
     border: 1px solid #9999ff;
     color: #ccccff;
-    padding: 2px 4px;
-    width: 250px;
+    padding: 3px 5px;
 }
 
 input[type="text"]:focus,
@@ -228,8 +235,8 @@ input[type="submit"]:hover {
 }
 
 .checkbox-custom {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     border: 2px solid #666;
     background-color: #1a0033;
     transition: all 0.2s ease;

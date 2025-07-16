@@ -11,17 +11,40 @@ import (
 
 func PostsPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_POST_LIST)
-	preferences := ctx.Locals("Preferences")
-	prefs, ok := preferences.(config.SitePreferences)
+	preferences, ok := ctx.Locals("Preferences").(config.SitePreferences)
 	if !ok {
 		return fiber.NewError(fiber.StatusInternalServerError, "Invalid preferences type")
 	}
 
-	posts, err := database.GetPosts(prefs.PostsPerPage)
+	request, ok := ctx.Locals("Request").(config.Request)
+	if !ok {
+		return fiber.NewError(fiber.StatusInternalServerError, "Invalid request type")
+	}
+
+	queryTags := ""
+	queryRatings := map[string]bool{}
+	for _, param := range request.Query {
+		switch param.Key {
+		case "tags":
+			queryTags = param.Value
+		case "rating":
+			queryRatings[param.Value] = true
+		}
+	}
+
+	if len(queryRatings) == 0 {
+		for _, rating := range []string{"safe", "questionable", "sensitive"} {
+			queryRatings[rating] = true
+		}
+	}
+
+	posts, err := database.GetPosts(preferences.PostsPerPage)
 
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_LIST, fiber.Map{
-		"Posts": posts,
-		"Error": err,
+		"Posts":        posts,
+		"Error":        err,
+		"QueryTags":    queryTags,
+		"QueryRatings": queryRatings,
 	})
 }
 

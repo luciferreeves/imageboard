@@ -3,7 +3,7 @@
   <div class="centered-main">
     <img src="/static/images/opwevhieia8ikwltpfgf.webp" alt="Main Image" class="main-img" />
     <h1>Welcome to {{ Appname }}!</h1>
-    <p>～ 個人的な画像ボード ～</p>
+    <p style="margin-bottom: 16px;">～ 個人的な画像ボード ～</p>
     {% include 'partials/search.django' %}
   </div>
 {% endblock %}

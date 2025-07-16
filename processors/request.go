@@ -8,9 +8,10 @@ import (
 
 func RequestContextProcessor(ctx *fiber.Ctx) error {
 	queryParams := []config.QueryParam{}
-	for k, v := range ctx.Queries() {
-		queryParams = append(queryParams, config.QueryParam{Key: k, Value: v})
-	}
+	queryArgs := ctx.Request().URI().QueryArgs()
+	queryArgs.VisitAll(func(key, value []byte) {
+		queryParams = append(queryParams, config.QueryParam{Key: string(key), Value: string(value)})
+	})
 
 	routeParams := []config.QueryParam{}
 	for k, v := range ctx.AllParams() {

@@ -1,11 +1,11 @@
 {% extends 'layouts/main.django' %}
-{% include 'partials/search.django' %}
 {% block content %}
   {% if Error %}
     <div class="centered-main">
       <div class="error">{{ Error }}</div>
     </div>
   {% endif %}
+  {% include 'partials/search.django' %}
   {% if Posts %}
     Will Show posts here
   {% else %}
