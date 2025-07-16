@@ -7,6 +7,9 @@
       <h1>Login to {{ Appname }}</h1>
       <p>Welcome back! Please enter your credentials to continue.</p>
       <form action="/login" method="POST" class="ibform">
+        {% if Next %}
+          <input type="hidden" name="next" value="{{ Next }}" />
+        {% endif %}
         {% if Error %}
           <div class="error">{{ Error|safe }}</div>
         {% endif %}

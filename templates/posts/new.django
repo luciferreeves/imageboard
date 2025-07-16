@@ -1,0 +1,4 @@
+{% extends 'layouts/main.django' %}
+{% block content %}
+  Upload a new post here
+{% endblock %}

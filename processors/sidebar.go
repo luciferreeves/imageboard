@@ -2,19 +2,12 @@ package processors
 
 import (
 	"fmt"
+	"imageboard/config"
 	"imageboard/database"
 	"imageboard/models"
 
 	"github.com/gofiber/fiber/v2"
 )
-
-type SiteStats struct {
-	Posts    string
-	Tags     string
-	Today    string
-	Storage  string
-	Comments string
-}
 
 func SidebarContextProcessor(ctx *fiber.Ctx) error {
 	popularTags, popularTagsErr := database.GetPopularTags(15)
@@ -64,7 +57,7 @@ func SidebarContextProcessor(ctx *fiber.Ctx) error {
 	todayCount, todayErr := database.GetTodayPostsCount()
 	storageSize, storageErr := database.GetTotalStorageSize()
 
-	var stats SiteStats
+	var stats config.SiteStats
 
 	if postsErr == nil {
 		stats.Posts = fmt.Sprintf("%d", postsCount)

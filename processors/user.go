@@ -4,6 +4,7 @@ import (
 	"imageboard/database"
 	"imageboard/models"
 	"imageboard/session"
+	"imageboard/utils/auth"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -38,6 +39,7 @@ func UserContextProcessor(ctx *fiber.Ctx) error {
 
 	ctx.Locals("User", user)
 	ctx.Locals("IsAuthenticated", user != nil)
+	ctx.Locals("LogoutURL", auth.GetLogoutURLWithRedirect(ctx))
 
 	return ctx.Next()
 }

@@ -55,3 +55,35 @@ type SMTPConfig struct {
 	Password string `env:"SMTP_PASSWORD" default:""`
 	From     string `env:"EMAIL_FROM" default:""`
 }
+
+type QueryParam struct {
+	Key   string
+	Value string
+}
+
+type Request struct {
+	Path        string
+	Method      string
+	Query       []QueryParam
+	Params      []QueryParam
+	QueryString string
+	IP          string
+	URL         string
+}
+
+type SiteStats struct {
+	Posts    string
+	Tags     string
+	Today    string
+	Storage  string
+	Comments string
+}
+
+type SitePreferences struct {
+	SidebarWidth     string `json:"sidebar_width"`
+	MainContentWidth string `json:"main_content_width"`
+	H1FontSize       string `json:"h1_font_size"`
+	BodyFontSize     string `json:"body_font_size"`
+	SmallFontSize    string `json:"small_font_size"`
+	PostsPerPage     int    `json:"posts_per_page"`
+}

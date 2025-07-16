@@ -1,0 +1,19 @@
+{% extends 'layouts/main.django' %}
+{% include 'partials/search.django' %}
+{% block content %}
+  {% if Error %}
+    <div class="centered-main">
+      <div class="error">{{ Error }}</div>
+    </div>
+  {% endif %}
+  {% if Posts %}
+    Will Show posts here
+  {% else %}
+    <div class="centered-main">
+      <h1>No Posts Available</h1>
+      <p>
+        It seems there are no posts available at the moment. Check back later or <a href="/posts/new">upload a new post</a>.
+      </p>
+    </div>
+  {% endif %}
+{% endblock %}

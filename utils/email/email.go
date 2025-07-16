@@ -45,7 +45,7 @@ func SendVerificationEmail(user *models.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to parse email template: %w", err)
 	}
-	verificationLink := fmt.Sprintf("%s/account/verify?token=%s", config.Server.AppBaseURL, token.Token)
+	verificationLink := fmt.Sprintf("%s%s?token=%s", config.Server.AppBaseURL, config.URL_VERIFY_EMAIL, token.Token)
 	data := struct {
 		Username string
 		Appname  string

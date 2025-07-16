@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"imageboard/config"
 	"imageboard/database"
 	"imageboard/models"
 	"imageboard/utils/auth"
@@ -20,7 +21,7 @@ type RegisterForm struct {
 }
 
 func renderRegisterError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
-	return shortcuts.RenderWithStatus(ctx, TEMPLATE_REGISTER, fiber.Map{
+	return shortcuts.RenderWithStatus(ctx, config.TEMPLATE_REGISTER, fiber.Map{
 		"Error":    errorMsg,
 		"Username": ctx.FormValue("username"),
 		"Email":    ctx.FormValue("email"),
@@ -28,17 +29,17 @@ func renderRegisterError(ctx *fiber.Ctx, errorMsg string, statusCode int) error 
 }
 
 func RegisterPageController(ctx *fiber.Ctx) error {
-	ctx.Locals("Title", PT_REGISTER)
+	ctx.Locals("Title", config.PT_REGISTER)
 
 	if auth.IsAuthenticated(ctx) {
 		return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
 	}
 
-	return shortcuts.Render(ctx, TEMPLATE_REGISTER, nil)
+	return shortcuts.Render(ctx, config.TEMPLATE_REGISTER, nil)
 }
 
 func RegisterPostController(ctx *fiber.Ctx) error {
-	ctx.Locals("Title", PT_REGISTER)
+	ctx.Locals("Title", config.PT_REGISTER)
 
 	if auth.IsAuthenticated(ctx) {
 		return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
@@ -46,11 +47,11 @@ func RegisterPostController(ctx *fiber.Ctx) error {
 
 	var form RegisterForm
 	if err := ctx.BodyParser(&form); err != nil {
-		return renderRegisterError(ctx, ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
+		return renderRegisterError(ctx, config.ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
 	}
 
 	if form.Password != form.ConfirmPassword {
-		return renderRegisterError(ctx, ERR_PASSWORD_MISMATCH, fiber.StatusBadRequest)
+		return renderRegisterError(ctx, config.ERR_PASSWORD_MISMATCH, fiber.StatusBadRequest)
 	}
 
 	user := &models.User{
@@ -77,7 +78,7 @@ func RegisterPostController(ctx *fiber.Ctx) error {
 		return renderRegisterError(ctx, "User created but failed to send verification email", fiber.StatusInternalServerError)
 	}
 
-	return shortcuts.Render(ctx, TEMPLATE_REGISTER, fiber.Map{
-		"Success": SUCCESS_USER_REGISTERED,
+	return shortcuts.Render(ctx, config.TEMPLATE_REGISTER, fiber.Map{
+		"Success": config.SUCCESS_USER_REGISTERED,
 	})
 }

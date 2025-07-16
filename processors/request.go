@@ -1,36 +1,23 @@
 package processors
 
 import (
+	"imageboard/config"
+
 	"github.com/gofiber/fiber/v2"
 )
 
-type QueryParam struct {
-	Key   string
-	Value string
-}
-
-type Request struct {
-	Path        string
-	Method      string
-	Query       []QueryParam
-	Params      []QueryParam
-	QueryString string
-	IP          string
-	URL         string
-}
-
 func RequestContextProcessor(ctx *fiber.Ctx) error {
-	queryParams := []QueryParam{}
+	queryParams := []config.QueryParam{}
 	for k, v := range ctx.Queries() {
-		queryParams = append(queryParams, QueryParam{Key: k, Value: v})
+		queryParams = append(queryParams, config.QueryParam{Key: k, Value: v})
 	}
 
-	routeParams := []QueryParam{}
+	routeParams := []config.QueryParam{}
 	for k, v := range ctx.AllParams() {
-		routeParams = append(routeParams, QueryParam{Key: k, Value: v})
+		routeParams = append(routeParams, config.QueryParam{Key: k, Value: v})
 	}
 
-	request := Request{
+	request := config.Request{
 		Path:        ctx.Path(),
 		Method:      ctx.Method(),
 		Query:       queryParams,

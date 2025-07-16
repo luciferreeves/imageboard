@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"imageboard/config"
 	"imageboard/session"
-	"imageboard/utils/auth"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -10,7 +10,7 @@ import (
 func LogoutController(ctx *fiber.Ctx) error {
 	sess, err := session.Store.Get(ctx)
 	if err != nil {
-		return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
+		return ctx.Redirect(config.URL_HOME, fiber.StatusSeeOther)
 	}
 
 	if err := sess.Destroy(); err != nil {
@@ -19,5 +19,10 @@ func LogoutController(ctx *fiber.Ctx) error {
 		sess.Save()
 	}
 
-	return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
+	next := ctx.Query("next")
+	if next != "" {
+		return ctx.Redirect(next, fiber.StatusSeeOther)
+	}
+
+	return ctx.Redirect(config.URL_HOME, fiber.StatusSeeOther)
 }

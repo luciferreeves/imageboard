@@ -13,7 +13,7 @@
     {% if User %}
       <a href="/account" class="user-status">{{ User.Username }}</a>
       <a href="/posts/new">Upload</a>
-      <a href="/logout">Logout</a>
+      <a href="{{ LogoutURL }}">Logout</a>
     {% else %}
       <span class="user-status">Guest</span>
       <a href="/login">Login</a>

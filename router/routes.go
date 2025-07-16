@@ -11,7 +11,8 @@ func Initialize(router *fiber.App) {
 	main.Get("/", controllers.HomePageController)
 
 	posts := router.Group("/posts")
-	posts.Get("/", controllers.PostsController)
+	posts.Get("/", controllers.PostsPageController)
+	posts.Get("/new", controllers.PostsUploadPageController)
 
 	login := router.Group("/login")
 	login.Get("/", controllers.LoginPageController)

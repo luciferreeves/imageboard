@@ -3,21 +3,13 @@ package processors
 import (
 	"encoding/json"
 	"fmt"
+	"imageboard/config"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type SitePreferences struct {
-	SidebarWidth     string `json:"sidebar_width"`
-	MainContentWidth string `json:"main_content_width"`
-	H1FontSize       string `json:"h1_font_size"`
-	BodyFontSize     string `json:"body_font_size"`
-	SmallFontSize    string `json:"small_font_size"`
-	PostsPerPage     int    `json:"posts_per_page"`
-}
-
 func PreferencesContextProcessor(context *fiber.Ctx) error {
-	defaultPreferences := SitePreferences{
+	defaultPreferences := config.SitePreferences{
 		SidebarWidth:     "180px",
 		MainContentWidth: "1200px",
 		H1FontSize:       "16px",
@@ -48,7 +40,7 @@ func PreferencesContextProcessor(context *fiber.Ctx) error {
 	return context.Next()
 }
 
-func preferencesToCSS(preferences SitePreferences) string {
+func preferencesToCSS(preferences config.SitePreferences) string {
 	return fmt.Sprintf(`
 	<style>
 		main {

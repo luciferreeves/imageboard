@@ -1,10 +1,11 @@
-package controllers
+package config
 
 const (
 	// Page titles
 	PT_HOME         = "Home Page"
 	PT_LOGIN        = "Login"
-	PT_POSTS        = "Posts"
+	PT_POST_LIST    = "Posts"
+	PT_POST_NEW     = "Upload New Post"
 	PT_PREFERENCES  = "Preferences"
 	PT_REGISTER     = "Register"
 	PT_404          = "Page Not Found"
@@ -13,7 +14,8 @@ const (
 	// Template names
 	TEMPLATE_HOME         = "home"
 	TEMPLATE_LOGIN        = "login"
-	TEMPLATE_POSTS        = "posts"
+	TEMPLATE_POST_LIST    = "posts/list"
+	TEMPLATE_POST_NEW     = "posts/new"
 	TEMPLATE_PREFERENCES  = "preferences"
 	TEMPLATE_REGISTER     = "register"
 	TEMPLATE_404          = "404"
@@ -22,9 +24,12 @@ const (
 	// URL constants for various routes
 	URL_HOME                = "/"
 	URL_LOGIN               = "/login"
-	URL_POSTS               = "/posts"
+	URL_LOGOUT              = "/logout"
+	URL_POST_LIST           = "/posts"
+	URL_POST_NEW            = "/posts/new"
 	URL_PREFERENCES         = "/preferences"
 	URL_REGISTER            = "/register"
+	URL_VERIFY_EMAIL        = "/account/verify"
 	URL_FORGOT_PASSWORD     = "/account/forgot-password"
 	URL_RESEND_VERIFICATION = "/account/resend-verification"
 
