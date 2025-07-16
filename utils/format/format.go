@@ -13,7 +13,12 @@ func FileSize(size int64) string {
 		exp++
 	}
 
-	return fmt.Sprintf("%.2f %sB", float64(size)/float64(div), "KMGTPE"[exp:exp+1])
+	val := float64(size) / float64(div)
+	unitStr := "KMGTPE"[exp : exp+1]
+	if val == float64(int64(val)) {
+		return fmt.Sprintf("%d %sB", int64(val), unitStr)
+	}
+	return fmt.Sprintf("%.2f %sB", val, unitStr)
 }
 
 func Count(count int64) string {

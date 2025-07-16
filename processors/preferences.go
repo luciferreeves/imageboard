@@ -10,7 +10,7 @@ import (
 
 func PreferencesContextProcessor(context *fiber.Ctx) error {
 	defaultPreferences := config.SitePreferences{
-		SidebarWidth:     "180px",
+		SidebarWidth:     "220px",
 		MainContentWidth: "1200px",
 		H1FontSize:       "16px",
 		BodyFontSize:     "13px",

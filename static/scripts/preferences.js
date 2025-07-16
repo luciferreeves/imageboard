@@ -8,18 +8,6 @@ function validateCSSFontSize(value) {
     return validFontSizePattern.test(value);
 }
 
-function showError(message) {
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-}
-
-function hideError() {
-    const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = '';
-    errorMessage.style.display = 'none';
-}
-
 function setPreferences() {
     const preferences = {
         sidebar_width: document.getElementById('sidebar-width').value,

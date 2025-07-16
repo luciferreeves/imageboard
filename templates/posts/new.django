@@ -1,4 +1,24 @@
 {% extends 'layouts/main.django' %}
 {% block content %}
-  Upload a new post here
+  <div class="centered-horizontal">
+    <div class="upload-area">
+      <div class="upload-drag-box">
+        <h1>Drop files here or just click this box!</h1>
+        <p>Supported formats: {{ AllowedTypes|join:', ' }}</p>
+        <small>Max size: {{ MaxSize }}</small>
+      </div>
+      <div class="upload-via-link">
+        <form id="uploadViaLinkForm" onsubmit="uploadViaLink(); return false;">
+          <input type="url" id="_uploadViaLink_InputBox" placeholder="alternatively, paste a URL here..." required />
+          <input type="submit" value="Add URL" />
+        </form>
+      </div>
+      <div class="error" style="display: none; margin: 8px 0; width: 512px;" id="error-message"></div>
+      <div id="_uploadViaLink_UploadPreviewsArea" class="upload-previews"></div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script type="text/javascript" src="/static/scripts/errorControls.js" defer></script>
+  <script type="text/javascript" src="/static/scripts/upload.js" defer></script>
 {% endblock %}
