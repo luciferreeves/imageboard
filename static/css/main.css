@@ -759,6 +759,22 @@ footer::before {
     color: #ff6b6b;
 }
 
+.post-rating.Safe {
+    color: #4caf50;
+}
+
+.post-rating.Questionable {
+    color: #ff9800;
+}
+
+.post-rating.Sensitive {
+    color: #9c27b0;
+}
+
+.post-rating.Explicit {
+    color: #f44336;
+}
+
 .post-tags {
     word-wrap: break-word;
     max-height: 40px;

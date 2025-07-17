@@ -16,7 +16,7 @@
               <div class="post-id">ID: {{ image.ID }}</div>
               <div class="post-score">★{{ image.FavouriteCount }}</div>
             </div>
-            <div class="post-rating">{{ image.Rating }}</div>
+            <div class="post-rating {{ image.Rating }}">{{ image.Rating }}</div>
             <div class="post-tags">
               {% for tag in image.Tags %}
                 <span class="post-tag" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</span>

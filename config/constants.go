@@ -10,12 +10,14 @@ const (
 	PT_REGISTER     = "Register"
 	PT_404          = "Page Not Found"
 	PT_VERIFY_EMAIL = "Verify Email"
+	PT_POST_SINGLE  = "Post"
 
 	// Template names
 	TEMPLATE_HOME         = "home"
 	TEMPLATE_LOGIN        = "login"
 	TEMPLATE_POST_LIST    = "posts/list"
 	TEMPLATE_POST_NEW     = "posts/new"
+	TEMPLATE_POST_SINGLE  = "posts/single"
 	TEMPLATE_PREFERENCES  = "preferences"
 	TEMPLATE_REGISTER     = "register"
 	TEMPLATE_404          = "404"

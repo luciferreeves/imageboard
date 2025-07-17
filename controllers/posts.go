@@ -5,10 +5,12 @@ import (
 	"imageboard/database"
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
+	"imageboard/utils/handlers"
 	"imageboard/utils/minio"
 	"imageboard/utils/shortcuts"
 	"imageboard/utils/transformers"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -32,36 +34,19 @@ func PostsPageController(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Invalid request type")
 	}
 
-	queryTags := ""
-	queryRatings := map[string]bool{}
-	for _, param := range request.Query {
-		switch param.Key {
-		case "tags":
-			queryTags = param.Value
-		case "rating":
-			queryRatings[param.Value] = true
-		}
-	}
+	queryTags, queryTagsList := handlers.ExtractQueryTags(request.Query)
+	queryRatings, queryRatingsMap := handlers.ExtractRatingsAndMap(request.Query)
 
-	if len(queryRatings) == 0 {
-		for _, rating := range []string{"safe", "questionable", "sensitive"} {
-			queryRatings[rating] = true
-		}
-	}
-
-	posts, err := database.GetPosts(preferences.PostsPerPage)
-
-	cdnURL := strings.TrimRight(config.S3.PublicURL, "/") + "/" + config.S3.BucketName
-	if config.S3.FolderPath != "" {
-		cdnURL += "/" + config.S3.FolderPath
+	posts, err := database.GetPosts(preferences.PostsPerPage, queryRatings, queryTagsList)
+	if err != nil {
+		log.Println(err)
 	}
 
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_LIST, fiber.Map{
 		"Posts":        posts,
-		"Error":        err,
 		"QueryTags":    queryTags,
-		"QueryRatings": queryRatings,
-		"CDNURL":       cdnURL,
+		"QueryRatings": queryRatingsMap,
+		"CDNURL":       format.GetCDNURL(),
 	})
 }
 
@@ -168,7 +153,18 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 
 	md5Hash := transformers.GenerateMD5Hash(imageData)
 
-	dbImage, err := database.CreateImage(
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to start transaction: "+tx.Error.Error())
+	}
+
+	dbImage, err := database.CreateImageWithTx(tx,
 		fileName,
 		contentType,
 		md5Hash,
@@ -178,24 +174,49 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 		currentUser.PostsRequireApproval,
 	)
 	if err != nil {
+		tx.Rollback()
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create image record: "+err.Error())
 	}
 
+	type imageSizeData struct {
+		sizeType config.ImageSizeType
+		width    int
+		height   int
+		fileSize int64
+	}
+	var imageSizes []imageSizeData
+
 	for _, sizeType := range isizeArray {
-		width, height, fileSize, imageData, err := transformers.TransformImageToVariant(decodedImage, sizeType)
+		width, height, fileSize, processedImageData, err := transformers.TransformImageToVariant(decodedImage, sizeType)
 		if err != nil {
+			tx.Rollback()
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to process image: "+err.Error())
 		}
 
-		err = minio.UploadImage(imageData, sizeType, fileName, contentType)
+		err = minio.UploadImage(processedImageData, sizeType, fileName, contentType)
 		if err != nil {
+			tx.Rollback()
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to upload image: "+err.Error())
 		}
 
-		_, err = database.CreateImageSize(dbImage.ID, sizeType, width, height, fileSize)
+		imageSizes = append(imageSizes, imageSizeData{
+			sizeType: sizeType,
+			width:    width,
+			height:   height,
+			fileSize: fileSize,
+		})
+	}
+
+	for _, sizeData := range imageSizes {
+		_, err = database.CreateImageSizeWithTx(tx, dbImage.ID, sizeData.sizeType, sizeData.width, sizeData.height, sizeData.fileSize)
 		if err != nil {
+			tx.Rollback()
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to create image size record: "+err.Error())
 		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to commit transaction: "+err.Error())
 	}
 
 	return ctx.SendStatus(fiber.StatusOK)
@@ -249,4 +270,38 @@ func PostsUploadImageLinkProxyController(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusRequestEntityTooLarge, "Image exceeds maximum allowed size of "+format.FileSize(maxSize))
 	}
 	return ctx.Send(buf)
+}
+
+func renderSinglePostError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
+	return shortcuts.RenderWithStatus(ctx, config.TEMPLATE_POST_SINGLE, fiber.Map{
+		"Error": errorMsg,
+	}, statusCode)
+}
+
+func PostsSinglePostPageController(ctx *fiber.Ctx) error {
+	ctx.Locals("Title", config.PT_POST_SINGLE)
+
+	postID := ctx.Params("id")
+	if postID == "" {
+		return renderSinglePostError(ctx, "Post ID is required", fiber.StatusBadRequest)
+	}
+
+	uintPostID, err := format.StringToUint(postID)
+	if err != nil {
+		return renderSinglePostError(ctx, "Invalid Post ID", fiber.StatusBadRequest)
+	}
+
+	post, err := database.GetPostByID(uintPostID)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return renderSinglePostError(ctx, "Post not found", fiber.StatusNotFound)
+		}
+		return renderSinglePostError(ctx, "Failed to retrieve post. "+err.Error(), fiber.StatusInternalServerError)
+	}
+
+	ctx.Locals("Title", config.PT_POST_SINGLE+" #"+format.Int64ToString(int64(post.ID)))
+	return shortcuts.Render(ctx, config.TEMPLATE_POST_SINGLE, fiber.Map{
+		"Post":   post,
+		"CDNURL": format.GetCDNURL(),
+	})
 }

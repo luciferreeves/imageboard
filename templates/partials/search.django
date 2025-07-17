@@ -6,19 +6,19 @@
     <input type="button" value="Clear" onclick="this.form.tags.value='';" />
     <div class="rating-toggles">
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="safe" {{ QueryRatings.safe|yesno:'checked,' }} />
+        <input type="checkbox" name="rating" value="safe" {{ QueryRatings.Safe|yesno:'checked,' }} />
         <span class="checkbox-custom safe"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="questionable" {{ QueryRatings.questionable|yesno:'checked,' }} />
+        <input type="checkbox" name="rating" value="questionable" {{ QueryRatings.Questionable|yesno:'checked,' }} />
         <span class="checkbox-custom questionable"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="sensitive" {{ QueryRatings.sensitive|yesno:'checked,' }} />
+        <input type="checkbox" name="rating" value="sensitive" {{ QueryRatings.Sensitive|yesno:'checked,' }} />
         <span class="checkbox-custom sensitive"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="explicit" {{ QueryRatings.explicit|yesno:'checked,' }} />
+        <input type="checkbox" name="rating" value="explicit" {{ QueryRatings.Explicit|yesno:'checked,' }} />
         <span class="checkbox-custom explicit"></span>
       </label>
     </div>

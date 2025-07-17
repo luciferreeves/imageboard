@@ -15,6 +15,7 @@ func Initialize(router *fiber.App) {
 	posts.Get("/new", controllers.PostsUploadPageController)
 	posts.Post("/new", controllers.PostsUploadPostController)
 	posts.Get("/new/ilinkfetch", controllers.PostsUploadImageLinkProxyController)
+	posts.Get("/:id", controllers.PostsSinglePostPageController)
 
 	login := router.Group("/login")
 	login.Get("/", controllers.LoginPageController)

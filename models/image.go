@@ -75,7 +75,7 @@ type Image struct {
 	FavouriteCount int64                   `gorm:"not null;default:0" json:"favorite_count"`
 	CommentCount   int64                   `gorm:"not null;default:0" json:"comment_count"`
 	Sizes          []ImageSize             `gorm:"foreignKey:ImageID" json:"sizes,omitempty"`
-	Tags           []Tag                   `gorm:"many2many:image_tags" json:"tags,omitempty"`
+	Tags           []Tag                   `gorm:"many2many:image_tags;joinForeignKey:image_id;joinReferences:tag_id" json:"tags,omitempty"`
 	FavoritedBy    []User                  `gorm:"many2many:user_favorites" json:"favorited_by,omitempty"`
 	Comments       []Comment               `gorm:"foreignKey:ImageID" json:"comments,omitempty"`
 }

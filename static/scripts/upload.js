@@ -289,12 +289,10 @@ function setupLocalImageUpload() {
  * @param {string} url
  */
 function handleDroppedUrl(url) {
-    // Accept direct image URLs or blob/data URLs
     const imageExt = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i;
     if (imageExt.test(url) || url.startsWith('blob:') || url.startsWith('data:image/')) {
         uploadViaLinkDirect(url);
     } else {
-        // Try to fetch and see if it's an image
         fetch(url, { method: 'HEAD' })
             .then(resp => {
                 const type = resp.headers.get('content-type') || '';
@@ -388,40 +386,34 @@ async function uploadAllImages() {
     isUploading = true;
     disableAllRemoveButtons();
 
-    // Disable the upload button and show progress
-    uploadAllBtn.disabled = true;
-    updateUploadButtonText(uploadedCount, totalImages, false);
-
-    try {
+    // Disable the upload button
+    uploadAllBtn.disabled = true; try {
+        let currentImageIndex = 1;
         for (const [key, imageData] of imageBlobMapping) {
             try {
-                // Get the selected rating for this image
+                updateUploadButtonText(currentImageIndex, totalImages, false);
                 const selectedRating = getSelectedRating(key);
                 imageData.rating = selectedRating;
-
-                // Create and submit form for this image
+                showImageProgress(imageData.previewElement);
                 await uploadSingleImage(imageData, selectedRating);
-
-                // Mark this image as successfully uploaded
                 markImageAsUploaded(imageData.previewElement);
                 uploadedCount++;
-                updateUploadButtonText(uploadedCount, totalImages, false);
-
+                currentImageIndex++;
             } catch (error) {
                 console.error(`Failed to upload image ${key}:`, error);
                 markImageAsError(imageData.previewElement, error.message);
                 hasErrors = true;
+                currentImageIndex++;
             }
         }
 
-        // Update button text based on results
         if (hasErrors) {
-            updateUploadButtonText(uploadedCount, totalImages, true);
+            uploadAllBtn.textContent = `⚠ Uploaded ${uploadedCount}/${totalImages} (some failed)`;
+            uploadAllBtn.className = 'upload-all-btn warning';
+            uploadAllBtn.disabled = false;
         } else {
             uploadAllBtn.textContent = `✓ All ${totalImages} images uploaded successfully!`;
             uploadAllBtn.className = 'upload-all-btn success';
-
-            // Clear all uploaded images after a delay
             setTimeout(() => {
                 clearAllUploadedImages();
             }, 2000);
@@ -433,7 +425,6 @@ async function uploadAllImages() {
         uploadAllBtn.className = 'upload-all-btn error';
         uploadAllBtn.disabled = false;
     } finally {
-        // Reset upload state
         isUploading = false;
         enableAllRemoveButtons();
     }
@@ -479,25 +470,32 @@ function getSelectedRating(key) {
  */
 async function uploadSingleImage(imageData, rating) {
     const formData = new FormData();
+    const fileSize = imageData.blob.size;
+    const estimatedDuration = estimateUploadDuration(fileSize);
 
-    // Add the image blob to the form
+    const progressBar = imageData.previewElement.nextElementSibling?.querySelector('.upload-progress-bar');
+    if (progressBar) {
+        animateProgress(progressBar, estimatedDuration);
+    }
+
     if (imageData.type === 'local') {
         formData.append('image', imageData.blob, imageData.nameOrUrl);
     } else {
-        // For link images, create a File object from the blob
         const file = new File([imageData.blob], 'image.jpg', { type: imageData.blob.type });
         formData.append('image', file);
         formData.append('source_url', imageData.nameOrUrl);
     }
 
-    // Add the rating
     formData.append('rating', rating);
 
-    // Submit to the backend
     const response = await fetch('/posts/new', {
         method: 'POST',
         body: formData
     });
+
+    if (progressBar) {
+        completeProgress(progressBar);
+    }
 
     if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
@@ -509,20 +507,21 @@ async function uploadSingleImage(imageData, rating) {
 
 /**
  * Updates the upload button text to show progress.
- * @param {number} current - Current number of uploaded images
+ * @param {number} current - Current image being uploaded (1-based)
  * @param {number} total - Total number of images to upload
  * @param {boolean} hasErrors - Whether there were errors during upload
  */
 function updateUploadButtonText(current, total, hasErrors) {
     if (hasErrors) {
-        uploadAllBtn.textContent = `⚠ Uploaded ${current}/${total} (some failed)`;
+        const uploadedCount = current - 1;
+        uploadAllBtn.textContent = `⚠ Uploaded ${uploadedCount}/${total} (some failed)`;
         uploadAllBtn.className = 'upload-all-btn warning';
         uploadAllBtn.disabled = false;
-    } else if (current === total) {
+    } else if (current > total) {
         uploadAllBtn.textContent = `✓ All ${total} images uploaded!`;
         uploadAllBtn.className = 'upload-all-btn success';
     } else {
-        uploadAllBtn.textContent = `⏳ Uploading (${current}/${total})`;
+        uploadAllBtn.textContent = `⏳ Uploading image ${current}/${total}`;
         uploadAllBtn.className = 'upload-all-btn uploading';
     }
 }
@@ -533,6 +532,7 @@ function updateUploadButtonText(current, total, hasErrors) {
  */
 function markImageAsUploaded(previewElement) {
     previewElement.classList.add('uploaded');
+
     const removeBtn = previewElement.querySelector('.preview-remove-btn');
     if (removeBtn) {
         removeBtn.textContent = '✓ Uploaded';
@@ -548,6 +548,12 @@ function markImageAsUploaded(previewElement) {
  */
 function markImageAsError(previewElement, errorMessage) {
     previewElement.classList.add('upload-error');
+
+    const progressContainer = previewElement.nextElementSibling;
+    if (progressContainer && progressContainer.classList.contains('upload-progress')) {
+        progressContainer.style.display = 'none';
+    }
+
     const removeBtn = previewElement.querySelector('.preview-remove-btn');
     if (removeBtn) {
         removeBtn.textContent = '✗ Failed';
@@ -570,7 +576,6 @@ function clearAllUploadedImages() {
     });
     updateUploadAllBtn();
 
-    // Reset button state if all images are cleared
     if (imageBlobMapping.size === 0) {
         if (uploadAllBtn) {
             uploadAllBtn.textContent = 'Upload All';
@@ -588,11 +593,123 @@ function clearAllUploadedImages() {
 function getImageKeyFromElement(previewElement) {
     const radioInput = previewElement.querySelector('input[type="radio"]');
     if (radioInput && radioInput.name) {
-        // Extract key from "rating-{key}" format
         const match = radioInput.name.match(/^rating-(.+)$/);
         return match ? match[1] : null;
     }
     return null;
+}
+
+/**
+ * Shows a progress bar for an image being uploaded.
+ * @param {HTMLElement} previewElement - The preview element
+ */
+function showImageProgress(previewElement) {
+    const existingProgress = previewElement.nextElementSibling;
+    if (existingProgress && existingProgress.classList.contains('upload-progress')) {
+        existingProgress.remove();
+    }
+
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'upload-progress';
+    progressContainer.style.cssText = `
+        width: 100%;
+        height: 4px;
+        overflow: hidden;
+        margin-top: -16px;
+        margin-bottom: 16px;
+    `;
+
+    const progressBar = document.createElement('div');
+    progressBar.className = 'upload-progress-bar';
+    progressBar.style.cssText = `
+        height: 100%;
+        width: 0%;
+        background-color: #4a9eff;
+    `;
+
+    progressContainer.appendChild(progressBar);
+    previewElement.parentNode.insertBefore(progressContainer, previewElement.nextSibling);
+
+    return progressBar;
+}
+
+/**
+ * Estimates upload duration based on file size and creates realistic progress.
+ * @param {number} fileSize - File size in bytes
+ * @returns {number} Estimated duration in milliseconds
+ */
+function estimateUploadDuration(fileSize) {
+    const sizeMB = fileSize / (1024 * 1024);
+    const baseTime = 2000;
+    const timePerMB = 6500;
+    const randomFactor = 0.5 + Math.random();
+
+    return Math.max(3000, baseTime + (sizeMB * timePerMB * randomFactor));
+}
+
+/**
+ * Animates progress bar with realistic timing based on file size.
+ * @param {HTMLElement} progressBar - The progress bar element
+ * @param {number} duration - Duration in milliseconds
+ * @returns {Promise<void>}
+ */
+function animateProgress(progressBar, duration) {
+    let progress = 0;
+    const startTime = Date.now();
+    let animationId;
+    let isCompleted = false;
+
+    const updateProgress = () => {
+        if (isCompleted) return;
+
+        const elapsed = Date.now() - startTime;
+        const timeRatio = elapsed / (duration * 4);
+
+        let targetProgress;
+        if (timeRatio < 0.2) {
+            targetProgress = (timeRatio / 0.2) * 0.05;
+        } else if (timeRatio < 0.8) {
+            const middleProgress = (timeRatio - 0.2) / 0.6;
+            targetProgress = 0.05 + (middleProgress * 0.85);
+        } else {
+            const endProgress = (timeRatio - 0.8) / 0.2;
+            const slowEnd = Math.sqrt(endProgress);
+            targetProgress = 0.90 + (slowEnd * 0.099);
+        }
+
+        targetProgress = Math.max(0, Math.min(targetProgress, 0.999));
+        progress = Math.max(progress, targetProgress);
+        progressBar.style.width = `${progress * 100}%`;
+
+        animationId = requestAnimationFrame(updateProgress);
+    };
+
+    animationId = requestAnimationFrame(updateProgress);
+
+    progressBar._completeAnimation = () => {
+        isCompleted = true;
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+    };
+}
+
+/**
+ * Completes the progress bar animation to 100%
+ * @param {HTMLElement} progressBar - The progress bar element
+ */
+function completeProgress(progressBar) {
+    if (progressBar._completeAnimation) {
+        progressBar._completeAnimation();
+    }
+    progressBar.style.width = '100%';
+
+    setTimeout(() => {
+        const progressContainer = progressBar.parentElement;
+        if (progressContainer && progressContainer.classList.contains('upload-progress')) {
+            progressContainer.style.display = 'none';
+        }
+    }, 500);
 }
 
 setupLocalImageUpload();

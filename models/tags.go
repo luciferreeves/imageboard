@@ -19,7 +19,7 @@ type Tag struct {
 	ParentID    *uint          `gorm:"index" json:"-"`
 	Parent      *Tag           `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
 	Children    []Tag          `gorm:"foreignKey:ParentID" json:"children,omitempty"`
-	Images      []Image        `gorm:"many2many:image_tags" json:"images,omitempty"`
+	Images      []Image        `gorm:"many2many:image_tags;joinForeignKey:tag_id;joinReferences:image_id" json:"images,omitempty"`
 }
 
 func (t *Tag) BeforeCreate(tx *gorm.DB) error {

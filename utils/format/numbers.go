@@ -18,3 +18,12 @@ func Int64ToString(value int64) string {
 	}
 	return fmt.Sprintf("%d", value)
 }
+
+func StringToUint(value string) (uint, error) {
+	var uintValue uint
+	_, err := fmt.Sscanf(value, "%d", &uintValue)
+	if err != nil {
+		return 0, fmt.Errorf("invalid string to uint conversion: %w", err)
+	}
+	return uintValue, nil
+}

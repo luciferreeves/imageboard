@@ -1,0 +1,10 @@
+{% extends 'layouts/main.django' %}
+{% block content %}
+  {% if Error %}
+    <div class="centered-main">
+      <div class="error">{{ Error }}</div>
+    </div>
+  {% else %}
+    Single Post
+  {% endif %}
+{% endblock %}
