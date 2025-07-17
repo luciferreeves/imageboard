@@ -1,6 +1,7 @@
 package transformers
 
 import (
+	"crypto"
 	"crypto/rand"
 	"encoding/hex"
 )
@@ -11,4 +12,10 @@ func GenerateRandomToken() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes), nil
+}
+
+func GenerateTokenFromString(input string) string {
+	hasher := crypto.SHA256.New()
+	hasher.Write([]byte(input))
+	return hex.EncodeToString(hasher.Sum(nil))
 }

@@ -29,7 +29,6 @@ func main() {
 	app := fiber.New(fiber.Config{
 		Views:        engine,
 		ErrorHandler: handlers.ServerErrorHandler,
-		BodyLimit:    config.Upload.MaxSize,
 	})
 
 	app.Use(recover.New())

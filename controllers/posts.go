@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"image"
 	"imageboard/config"
 	"imageboard/database"
+	"imageboard/models"
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
 	"imageboard/utils/shortcuts"
@@ -100,26 +102,78 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 
 	imageFile := imageFiles[0]
 
-	rating := ctx.FormValue("rating")
-	if rating == "" {
-		rating = "safe"
+	contentType := imageFile.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "image/") {
+		return fiber.NewError(fiber.StatusBadRequest, "Uploaded file is not an image")
 	}
 
-	sourceURL := ctx.FormValue("source_url")
+	if !strings.Contains(config.Upload.AllowedTypes, contentType) {
+		return fiber.NewError(fiber.StatusBadRequest, "Uploaded image type is not allowed")
+	}
 
-	// Validate file size
 	maxSize := int64(config.Upload.MaxSize)
 	if imageFile.Size > maxSize {
 		return fiber.NewError(fiber.StatusRequestEntityTooLarge,
 			"File size exceeds maximum allowed size of "+format.FileSize(maxSize))
 	}
 
-	// Validate content type
+	sourceURL := ctx.FormValue("source_url")
+
 	file, err := imageFile.Open()
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to open uploaded file")
 	}
 	defer file.Close()
+
+	imageData, err := io.ReadAll(file)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to read uploaded file")
+	}
+
+	decodedImage, format, err := format.DecodeImage(imageData)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to decode image: "+err.Error())
+	}
+
+	var fileName string
+	if sourceURL != "" {
+		fileName = transformers.CreateUniqueFileName(sourceURL, format)
+	} else {
+		fileName = transformers.CreateUniqueFileName(imageFile.Filename, format)
+	}
+
+	rating := ctx.FormValue("rating")
+	if rating == "" {
+		rating = "safe"
+	}
+
+	imageSizes := make(map[config.ImageSizeType]struct {
+		imageSize models.ImageSize
+		image     image.Image
+	})
+	isizeArray := []config.ImageSizeType{
+		config.ImageSizeTypeIcon,
+		config.ImageSizeTypeThumbnail,
+		config.ImageSizeTypeSmall,
+		config.ImageSizeTypeMedium,
+		config.ImageSizeTypeLarge,
+		config.ImageSizeTypeOriginal,
+	}
+
+	for _, sizeType := range isizeArray {
+		size, img, err := transformers.TransformImageToVariant(decodedImage, sizeType)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to process image: "+err.Error())
+		}
+		size.ImageID = 0 // This will be set later when saving the image
+		imageSizes[sizeType] = struct {
+			imageSize models.ImageSize
+			image     image.Image
+		}{
+			imageSize: size,
+			image:     img,
+		}
+	}
 
 	// For now, just return success - in a full implementation:
 	// 1. Generate unique filename
@@ -133,7 +187,7 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 		"success": true,
 		"message": "Image uploaded successfully",
 		"data": fiber.Map{
-			"filename":   imageFile.Filename,
+			"filename":   fileName,
 			"size":       imageFile.Size,
 			"rating":     rating,
 			"source_url": sourceURL,
