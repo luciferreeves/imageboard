@@ -123,7 +123,6 @@ function setUploadLoadingIndicator(show) {
         indicator = document.createElement('div');
         indicator.id = '_uploadLoadingIndicator';
         indicator.className = 'upload-loading-indicator';
-        // Segmented ring spinner markup, no text
         indicator.innerHTML = `
             <div class="upload-loading-icon">
                 <div class="ib-loader-spinner">
@@ -144,7 +143,7 @@ function setUploadLoadingIndicator(show) {
         `;
         dragBox.appendChild(indicator);
     }
-    // Animation logic for retro ring spinner
+
     const spinner = indicator.querySelector('.ib-loader-spinner');
     const segments = spinner ? spinner.querySelectorAll('.ib-loader-seg') : [];
     if (show && segments.length) {

@@ -6,6 +6,7 @@ import (
 	"imageboard/middleware"
 	"imageboard/processors"
 	"imageboard/router"
+	"imageboard/utils/handlers"
 	"log"
 
 	_ "imageboard/database"
@@ -26,12 +27,9 @@ func main() {
 	engine := django.New("./templates", ".django")
 	engine.Reload(config.Server.IsDevMode)
 	app := fiber.New(fiber.Config{
-		Views: engine,
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			log.Printf("Error: %v", err)
-			return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
-		},
-		BodyLimit: config.Upload.MaxSize,
+		Views:        engine,
+		ErrorHandler: handlers.ServerErrorHandler,
+		BodyLimit:    config.Upload.MaxSize,
 	})
 
 	app.Use(recover.New())

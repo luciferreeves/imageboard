@@ -13,7 +13,7 @@
           <input type="submit" value="Add URL" />
         </form>
       </div>
-      <div class="error" style="display: none; margin: 8px 0; width: 512px;" id="error-message"></div>
+      <div class="error" style="display: none; margin: 8px 0; width: 100%;" id="error-message"></div>
       <div id="_uploadViaLink_UploadPreviewsArea" class="upload-previews"></div>
     </div>
   </div>
