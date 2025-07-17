@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"image"
 	"imageboard/config"
 	"imageboard/database"
-	"imageboard/models"
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
+	"imageboard/utils/minio"
 	"imageboard/utils/shortcuts"
 	"imageboard/utils/transformers"
 	"io"
@@ -130,16 +129,16 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to read uploaded file")
 	}
 
-	decodedImage, format, err := format.DecodeImage(imageData)
+	decodedImage, imageFormat, err := format.DecodeImage(imageData)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to decode image: "+err.Error())
 	}
 
 	var fileName string
 	if sourceURL != "" {
-		fileName = transformers.CreateUniqueFileName(sourceURL, format)
+		fileName = transformers.CreateUniqueFileName(sourceURL, imageFormat)
 	} else {
-		fileName = transformers.CreateUniqueFileName(imageFile.Filename, format)
+		fileName = transformers.CreateUniqueFileName(imageFile.Filename, imageFormat)
 	}
 
 	rating := ctx.FormValue("rating")
@@ -147,10 +146,6 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 		rating = "safe"
 	}
 
-	imageSizes := make(map[config.ImageSizeType]struct {
-		imageSize models.ImageSize
-		image     image.Image
-	})
 	isizeArray := []config.ImageSizeType{
 		config.ImageSizeTypeIcon,
 		config.ImageSizeTypeThumbnail,
@@ -160,39 +155,44 @@ func PostsUploadPostController(ctx *fiber.Ctx) error {
 		config.ImageSizeTypeOriginal,
 	}
 
+	currentUser := auth.GetCurrentUser(ctx)
+	if currentUser == nil {
+		return fiber.NewError(fiber.StatusUnauthorized, "User not authenticated")
+	}
+
+	md5Hash := transformers.GenerateMD5Hash(imageData)
+
+	dbImage, err := database.CreateImage(
+		fileName,
+		contentType,
+		md5Hash,
+		sourceURL,
+		rating,
+		currentUser.ID,
+		currentUser.PostsRequireApproval,
+	)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create image record: "+err.Error())
+	}
+
 	for _, sizeType := range isizeArray {
-		size, img, err := transformers.TransformImageToVariant(decodedImage, sizeType)
+		width, height, fileSize, imageData, err := transformers.TransformImageToVariant(decodedImage, sizeType)
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to process image: "+err.Error())
 		}
-		size.ImageID = 0 // This will be set later when saving the image
-		imageSizes[sizeType] = struct {
-			imageSize models.ImageSize
-			image     image.Image
-		}{
-			imageSize: size,
-			image:     img,
+
+		err = minio.UploadImage(imageData, sizeType, fileName, contentType)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to upload image: "+err.Error())
+		}
+
+		_, err = database.CreateImageSize(dbImage.ID, sizeType, width, height, fileSize)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to create image size record: "+err.Error())
 		}
 	}
 
-	// For now, just return success - in a full implementation:
-	// 1. Generate unique filename
-	// 2. Calculate MD5 hash
-	// 3. Resize image and create different sizes
-	// 4. Upload to S3 or local storage
-	// 5. Save image record to database
-	// 6. Return image ID or details
-
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": true,
-		"message": "Image uploaded successfully",
-		"data": fiber.Map{
-			"filename":   fileName,
-			"size":       imageFile.Size,
-			"rating":     rating,
-			"source_url": sourceURL,
-		},
-	})
+	return ctx.SendStatus(fiber.StatusOK)
 }
 
 func PostsUploadImageLinkProxyController(ctx *fiber.Ctx) error {

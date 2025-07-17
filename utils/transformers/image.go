@@ -3,20 +3,21 @@ package transformers
 import (
 	"image"
 	"imageboard/config"
-	"imageboard/models"
 	"imageboard/utils/format"
 	"imageboard/utils/validators"
 	"strings"
+
+	"github.com/nfnt/resize"
 )
 
-func TransformImageToVariant(img image.Image, variant config.ImageSizeType) (models.ImageSize, image.Image, error) {
+func TransformImageToVariant(img image.Image, variant config.ImageSizeType) (int, int, int64, []byte, error) {
 	variantSizeMap := map[config.ImageSizeType]int{
 		config.ImageSizeTypeIcon:      64,
 		config.ImageSizeTypeThumbnail: 256,
 		config.ImageSizeTypeSmall:     512,
 		config.ImageSizeTypeMedium:    1024,
 		config.ImageSizeTypeLarge:     2048,
-		config.ImageSizeTypeOriginal:  0, // Original size, no resizing
+		config.ImageSizeTypeOriginal:  0,
 	}
 
 	maxWidth := variantSizeMap[variant]
@@ -24,14 +25,12 @@ func TransformImageToVariant(img image.Image, variant config.ImageSizeType) (mod
 		img = ResizeImage(img, maxWidth)
 	}
 
-	fileSize := format.GetImageFileSize(img)
+	fileSize, imageData, err := format.GetImageSizeAndData(img)
+	if err != nil {
+		return 0, 0, 0, nil, err
+	}
 
-	return models.ImageSize{
-		SizeType: variant,
-		Width:    img.Bounds().Dx(),
-		Height:   img.Bounds().Dy(),
-		FileSize: fileSize,
-	}, img, nil
+	return img.Bounds().Dx(), img.Bounds().Dy(), fileSize, imageData, nil
 }
 
 func ResizeImage(img image.Image, maxWidth int) image.Image {
@@ -40,19 +39,9 @@ func ResizeImage(img image.Image, maxWidth int) image.Image {
 	}
 
 	ratio := float64(maxWidth) / float64(img.Bounds().Dx())
-	newWidth := int(float64(img.Bounds().Dx()) * ratio)
-	newHeight := int(float64(img.Bounds().Dy()) * ratio)
-	newImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
-	for y := 0; y < newHeight; y++ {
-		for x := 0; x < newWidth; x++ {
-			srcX := int(float64(x) / ratio)
-			srcY := int(float64(y) / ratio)
-			if srcX < img.Bounds().Dx() && srcY < img.Bounds().Dy() {
-				newImg.Set(x, y, img.At(srcX, srcY))
-			}
-		}
-	}
-	return newImg
+	newHeight := uint(float64(img.Bounds().Dy()) * ratio)
+
+	return resize.Resize(uint(maxWidth), newHeight, img, resize.Lanczos3)
 }
 
 func CreateUniqueFileName(sourceURLOrOriginalName, imageFormat string) string {
@@ -64,11 +53,11 @@ func CreateUniqueFileName(sourceURLOrOriginalName, imageFormat string) string {
 
 	currentTime := format.GetCurrentTimeAsTimestamp()
 	fileNameWithoutExtension := format.RemoveExtension(fileName)
-	fileName = GenerateTokenFromString(fileNameWithoutExtension + "_" + format.Int64ToString(currentTime))
+	fileName = GenerateTokenFromString(fileNameWithoutExtension + "_" + format.Int64ToString(currentTime) + "_" + GenerateUUID())
 
 	if len(fileName) > 32 {
 		mid := len(fileName) / 2
-		fileName = fileName[mid-16 : mid+16]
+		fileName = fileName[:mid-16] + format.Int64ToString(currentTime) + fileName[mid+16:]
 	}
 	return fileName + "." + imageFormat
 }
@@ -85,5 +74,20 @@ func ConvertStringRatingToType(rating string) (config.Rating, error) {
 		return config.RatingExplicit, nil
 	default:
 		return config.RatingSafe, nil
+	}
+}
+
+func ConvertStringToContentType(contentType string) (config.ImageContentType, error) {
+	switch contentType {
+	case "image/jpeg":
+		return config.ImageContentTypeJPEG, nil
+	case "image/png":
+		return config.ImageContentTypePNG, nil
+	case "image/gif":
+		return config.ImageContentTypeGIF, nil
+	case "image/webp":
+		return config.ImageContentTypeWebP, nil
+	default:
+		return config.ImageContentTypeJPEG, nil
 	}
 }

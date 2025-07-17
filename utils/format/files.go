@@ -51,21 +51,19 @@ func DecodeImage(imgData []byte) (image.Image, string, error) {
 	return img, formatName, err
 }
 
-func GetImageFileSize(img image.Image) int64 {
+func GetImageSizeAndData(img image.Image) (int64, []byte, error) {
 	var buf bytes.Buffer
 	switch img.(type) {
 	case *image.NRGBA, *image.RGBA, *image.YCbCr:
-		// Use PNG encoding for lossless compression
 		err := png.Encode(&buf, img)
 		if err != nil {
-			return 0
+			return 0, nil, err
 		}
 	default:
-		// Fallback to JPEG encoding for other formats
 		err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: 85})
 		if err != nil {
-			return 0
+			return 0, nil, err
 		}
 	}
-	return int64(buf.Len())
+	return int64(buf.Len()), buf.Bytes(), nil
 }

@@ -1,8 +1,10 @@
 package database
 
 import (
+	"imageboard/config"
 	"imageboard/models"
 	"imageboard/utils/format"
+	"imageboard/utils/transformers"
 	"time"
 )
 
@@ -31,4 +33,48 @@ func GetTotalStorageSize() (string, error) {
 	}
 
 	return format.FileSize(totalSize), nil
+}
+
+func CreateImage(fileName, contentType, md5Hash, sourceURL, rating string, uploaderID uint, requiresApproval bool) (*models.Image, error) {
+	ratingEnum, err := transformers.ConvertStringRatingToType(rating)
+	if err != nil {
+		return nil, err
+	}
+
+	contentTypeEnum, err := transformers.ConvertStringToContentType(contentType)
+	if err != nil {
+		return nil, err
+	}
+
+	image := models.Image{
+		FileName:    fileName,
+		ContentType: contentTypeEnum,
+		MD5Hash:     md5Hash,
+		SourceURL:   sourceURL,
+		Rating:      ratingEnum,
+		UploaderID:  uploaderID,
+		IsApproved:  !requiresApproval,
+	}
+
+	if err := DB.Create(&image).Error; err != nil {
+		return nil, err
+	}
+
+	return &image, nil
+}
+
+func CreateImageSize(imageID uint, sizeType config.ImageSizeType, width, height int, fileSize int64) (*models.ImageSize, error) {
+	imageSize := models.ImageSize{
+		ImageID:  imageID,
+		SizeType: sizeType,
+		Width:    width,
+		Height:   height,
+		FileSize: fileSize,
+	}
+
+	if err := DB.Create(&imageSize).Error; err != nil {
+		return nil, err
+	}
+
+	return &imageSize, nil
 }

@@ -57,13 +57,12 @@ func (s *ImageSize) GetFileSizeFormatted() string {
 type Image struct {
 	gorm.Model
 	FileName       string                  `gorm:"not null;size:255" json:"file_name"`
-	OriginalName   string                  `gorm:"not null;size:255" json:"original_name"`
 	ContentType    config.ImageContentType `gorm:"not null;size:100" json:"content_type"`
 	MD5Hash        string                  `gorm:"not null;size:32" json:"md5_hash"`
 	Title          string                  `gorm:"default:'';size:255" json:"title"`
 	Description    string                  `gorm:"default:'';type:text" json:"description"`
 	SourceURL      string                  `gorm:"default:'';size:500" json:"source_url"`
-	Rating         config.Rating           `gorm:"not null;default:'safe';size:10" json:"rating"`
+	Rating         config.Rating           `gorm:"not null;default:'safe';size:15" json:"rating"`
 	IsApproved     bool                    `gorm:"not null;default:true" json:"is_approved"`
 	IsDeleted      bool                    `gorm:"not null;default:false" json:"is_deleted"`
 	ThreadLocked   bool                    `gorm:"not null;default:false" json:"thread_locked"`
@@ -83,7 +82,6 @@ type Image struct {
 
 func (i *Image) BeforeCreate(tx *gorm.DB) error {
 	i.FileName = strings.TrimSpace(i.FileName)
-	i.OriginalName = strings.TrimSpace(i.OriginalName)
 	i.Title = strings.TrimSpace(i.Title)
 	i.Description = strings.TrimSpace(i.Description)
 

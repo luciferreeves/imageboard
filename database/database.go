@@ -31,7 +31,7 @@ func init() {
 
 	logLevel := logger.Silent
 	if config.Server.IsDevMode {
-		logLevel = logger.Silent
+		logLevel = logger.Info
 	}
 
 	dialector := postgres.Open(dsn)
