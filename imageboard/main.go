@@ -33,7 +33,9 @@ func main() {
 
 	app.Use(recover.New())
 	app.Use(logger.New())
-	app.Use(helmet.New())
+	app.Use(helmet.New(helmet.Config{
+		CrossOriginEmbedderPolicy: "unsafe-none",
+	}))
 	app.Use(cors.New())
 
 	processors.Initialize(app)

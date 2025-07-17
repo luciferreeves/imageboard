@@ -51,11 +51,17 @@ func PostsPageController(ctx *fiber.Ctx) error {
 
 	posts, err := database.GetPosts(preferences.PostsPerPage)
 
+	cdnURL := strings.TrimRight(config.S3.PublicURL, "/") + "/" + config.S3.BucketName
+	if config.S3.FolderPath != "" {
+		cdnURL += "/" + config.S3.FolderPath
+	}
+
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_LIST, fiber.Map{
 		"Posts":        posts,
 		"Error":        err,
 		"QueryTags":    queryTags,
 		"QueryRatings": queryRatings,
+		"CDNURL":       cdnURL,
 	})
 }
 

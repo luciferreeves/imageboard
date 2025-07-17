@@ -7,7 +7,25 @@
   {% endif %}
   {% include 'partials/search.django' %}
   {% if Posts %}
-    Will Show posts here
+    <div class="post-list">
+      {% for image in Posts %}
+        <a href="/posts/{{ image.ID }}" class="post-item">
+          <img src="{{ CDNURL }}/thumbnail/{{ image.FileName }}" alt="{{ image.Title }}" width="{{ image.Sizes.1.Width }}" height="{{ image.Sizes.1.Height }}" />
+          <div class="post-overlay">
+            <div class="post-overlay-top">
+              <div class="post-id">ID: {{ image.ID }}</div>
+              <div class="post-score">★{{ image.FavouriteCount }}</div>
+            </div>
+            <div class="post-rating">{{ image.Rating }}</div>
+            <div class="post-tags">
+              {% for tag in image.Tags %}
+                <span class="post-tag" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
   {% else %}
     <div class="centered-main">
       <h1>No Posts Available</h1>

@@ -13,7 +13,7 @@ import (
 type ImageSize struct {
 	gorm.Model
 	ImageID  uint                 `gorm:"not null;index" json:"-"`
-	Image    Image                `gorm:"foreignKey:ImageID" json:"image"`
+	Image    Image                `gorm:"foreignKey:ImageID" json:"-"`
 	SizeType config.ImageSizeType `gorm:"not null;size:50" json:"size_type"`
 	Width    int                  `gorm:"not null" json:"width"`
 	Height   int                  `gorm:"not null" json:"height"`
@@ -115,6 +115,15 @@ func (i *Image) GetURL(sizeType config.ImageSizeType) string {
 func (i *Image) GetSize(sizeType config.ImageSizeType) *ImageSize {
 	for _, size := range i.Sizes {
 		if size.SizeType == sizeType {
+			return &size
+		}
+	}
+	return nil
+}
+
+func (i *Image) GetSizeByString(sizeType string) *ImageSize {
+	for _, size := range i.Sizes {
+		if string(size.SizeType) == sizeType {
 			return &size
 		}
 	}
