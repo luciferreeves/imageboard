@@ -123,8 +123,42 @@ function setUploadLoadingIndicator(show) {
         indicator = document.createElement('div');
         indicator.id = '_uploadLoadingIndicator';
         indicator.className = 'upload-loading-indicator';
-        indicator.innerHTML = '<span class="upload-loading-icon">✦</span>';
+        // Segmented ring spinner markup, no text
+        indicator.innerHTML = `
+            <div class="upload-loading-icon">
+                <div class="ib-loader-spinner">
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                    <div class="ib-loader-seg"></div>
+                </div>
+            </div>
+        `;
         dragBox.appendChild(indicator);
+    }
+    // Animation logic for retro ring spinner
+    const spinner = indicator.querySelector('.ib-loader-spinner');
+    const segments = spinner ? spinner.querySelectorAll('.ib-loader-seg') : [];
+    if (show && segments.length) {
+        let frame = 0;
+        if (!indicator._retroAnimInterval) {
+            indicator._retroAnimInterval = setInterval(() => {
+                segments.forEach((seg, idx) => seg.classList.toggle('active', idx === frame));
+                frame = (frame + 1) % segments.length;
+            }, 80);
+        }
+    } else if (!show && indicator._retroAnimInterval) {
+        clearInterval(indicator._retroAnimInterval);
+        indicator._retroAnimInterval = null;
+        segments.forEach(seg => seg.classList.remove('active'));
     }
     indicator.style.display = show ? 'flex' : 'none';
 }
@@ -337,4 +371,3 @@ function handleFiles(files) {
 }
 
 setupLocalImageUpload();
-
