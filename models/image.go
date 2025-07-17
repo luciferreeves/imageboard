@@ -12,12 +12,12 @@ import (
 
 type ImageSize struct {
 	gorm.Model
-	ImageID  uint          `gorm:"not null;index" json:"-"`
-	Image    Image         `gorm:"foreignKey:ImageID" json:"image"`
-	SizeType ImageSizeType `gorm:"not null;size:50" json:"size_type"`
-	Width    int           `gorm:"not null" json:"width"`
-	Height   int           `gorm:"not null" json:"height"`
-	FileSize int64         `gorm:"not null" json:"file_size"`
+	ImageID  uint                 `gorm:"not null;index" json:"-"`
+	Image    Image                `gorm:"foreignKey:ImageID" json:"image"`
+	SizeType config.ImageSizeType `gorm:"not null;size:50" json:"size_type"`
+	Width    int                  `gorm:"not null" json:"width"`
+	Height   int                  `gorm:"not null" json:"height"`
+	FileSize int64                `gorm:"not null" json:"file_size"`
 }
 
 func (s *ImageSize) BeforeCreate(tx *gorm.DB) error {
@@ -56,29 +56,29 @@ func (s *ImageSize) GetFileSizeFormatted() string {
 
 type Image struct {
 	gorm.Model
-	FileName       string           `gorm:"not null;size:255" json:"file_name"`
-	OriginalName   string           `gorm:"not null;size:255" json:"original_name"`
-	ContentType    ImageContentType `gorm:"not null;size:100" json:"content_type"`
-	MD5Hash        string           `gorm:"not null;size:32" json:"md5_hash"`
-	Title          string           `gorm:"default:'';size:255" json:"title"`
-	Description    string           `gorm:"default:'';type:text" json:"description"`
-	SourceURL      string           `gorm:"default:'';size:500" json:"source_url"`
-	Rating         Rating           `gorm:"not null;default:'safe';size:10" json:"rating"`
-	IsApproved     bool             `gorm:"not null;default:true" json:"is_approved"`
-	IsDeleted      bool             `gorm:"not null;default:false" json:"is_deleted"`
-	ThreadLocked   bool             `gorm:"not null;default:false" json:"thread_locked"`
-	UploaderID     uint             `gorm:"not null;index" json:"-"`
-	Uploader       User             `gorm:"foreignKey:UploaderID" json:"uploader"`
-	ApproverID     *uint            `gorm:"index" json:"-"`
-	Approver       *User            `gorm:"foreignKey:ApproverID" json:"approver,omitempty"`
-	RelatedImages  []Image          `gorm:"many2many:image_relationships;joinForeignKey:image_id;joinReferences:related_image_id" json:"related_images,omitempty"`
-	ViewCount      int64            `gorm:"not null;default:0" json:"view_count"`
-	FavouriteCount int64            `gorm:"not null;default:0" json:"favorite_count"`
-	CommentCount   int64            `gorm:"not null;default:0" json:"comment_count"`
-	Sizes          []ImageSize      `gorm:"foreignKey:ImageID" json:"sizes,omitempty"`
-	Tags           []Tag            `gorm:"many2many:image_tags" json:"tags,omitempty"`
-	FavoritedBy    []User           `gorm:"many2many:user_favorites" json:"favorited_by,omitempty"`
-	Comments       []Comment        `gorm:"foreignKey:ImageID" json:"comments,omitempty"`
+	FileName       string                  `gorm:"not null;size:255" json:"file_name"`
+	OriginalName   string                  `gorm:"not null;size:255" json:"original_name"`
+	ContentType    config.ImageContentType `gorm:"not null;size:100" json:"content_type"`
+	MD5Hash        string                  `gorm:"not null;size:32" json:"md5_hash"`
+	Title          string                  `gorm:"default:'';size:255" json:"title"`
+	Description    string                  `gorm:"default:'';type:text" json:"description"`
+	SourceURL      string                  `gorm:"default:'';size:500" json:"source_url"`
+	Rating         config.Rating           `gorm:"not null;default:'safe';size:10" json:"rating"`
+	IsApproved     bool                    `gorm:"not null;default:true" json:"is_approved"`
+	IsDeleted      bool                    `gorm:"not null;default:false" json:"is_deleted"`
+	ThreadLocked   bool                    `gorm:"not null;default:false" json:"thread_locked"`
+	UploaderID     uint                    `gorm:"not null;index" json:"-"`
+	Uploader       User                    `gorm:"foreignKey:UploaderID" json:"uploader"`
+	ApproverID     *uint                   `gorm:"index" json:"-"`
+	Approver       *User                   `gorm:"foreignKey:ApproverID" json:"approver,omitempty"`
+	RelatedImages  []Image                 `gorm:"many2many:image_relationships;joinForeignKey:image_id;joinReferences:related_image_id" json:"related_images,omitempty"`
+	ViewCount      int64                   `gorm:"not null;default:0" json:"view_count"`
+	FavouriteCount int64                   `gorm:"not null;default:0" json:"favorite_count"`
+	CommentCount   int64                   `gorm:"not null;default:0" json:"comment_count"`
+	Sizes          []ImageSize             `gorm:"foreignKey:ImageID" json:"sizes,omitempty"`
+	Tags           []Tag                   `gorm:"many2many:image_tags" json:"tags,omitempty"`
+	FavoritedBy    []User                  `gorm:"many2many:user_favorites" json:"favorited_by,omitempty"`
+	Comments       []Comment               `gorm:"foreignKey:ImageID" json:"comments,omitempty"`
 }
 
 func (i *Image) BeforeCreate(tx *gorm.DB) error {
@@ -104,7 +104,7 @@ func (i *Image) BeforeDelete(tx *gorm.DB) error {
 	) AND count > 0`, i.ID).Error
 }
 
-func (i *Image) GetURL(sizeType ImageSizeType) string {
+func (i *Image) GetURL(sizeType config.ImageSizeType) string {
 	for _, size := range i.Sizes {
 		if size.SizeType == sizeType {
 			return size.GetURL()
@@ -114,7 +114,7 @@ func (i *Image) GetURL(sizeType ImageSizeType) string {
 	return ""
 }
 
-func (i *Image) GetSize(sizeType ImageSizeType) *ImageSize {
+func (i *Image) GetSize(sizeType config.ImageSizeType) *ImageSize {
 	for _, size := range i.Sizes {
 		if size.SizeType == sizeType {
 			return &size
@@ -124,14 +124,14 @@ func (i *Image) GetSize(sizeType ImageSizeType) *ImageSize {
 }
 
 func (i *Image) GetOriginalDimensions() string {
-	if fullSize := i.GetSize(ImageSizeTypeOriginal); fullSize != nil {
+	if fullSize := i.GetSize(config.ImageSizeTypeOriginal); fullSize != nil {
 		return fullSize.GetDimensions()
 	}
 	return "Unknown"
 }
 
 func (i *Image) GetAspectRatio() string {
-	if fullSize := i.GetSize(ImageSizeTypeOriginal); fullSize != nil {
+	if fullSize := i.GetSize(config.ImageSizeTypeOriginal); fullSize != nil {
 		if fullSize.Height == 0 {
 			return "Unknown"
 		}
@@ -148,7 +148,7 @@ func (i *Image) GetAspectRatio() string {
 	return "Unknown"
 }
 
-func (i *Image) AddSize(tx *gorm.DB, sizeType ImageSizeType, width, height int, fileSize int64) (*ImageSize, error) {
+func (i *Image) AddSize(tx *gorm.DB, sizeType config.ImageSizeType, width, height int, fileSize int64) (*ImageSize, error) {
 	if width <= 0 || height <= 0 {
 		return nil, fmt.Errorf("image dimensions must be greater than zero")
 	}

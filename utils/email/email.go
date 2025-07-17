@@ -36,7 +36,7 @@ func SendMail(to, subject, body string) error {
 }
 
 func SendVerificationEmail(user *models.User) error {
-	token, err := database.GenerateEmailToken(int(user.ID), models.EmailTokenTypeVerification)
+	token, err := database.GenerateEmailToken(int(user.ID), config.EmailTokenTypeVerification)
 	if err != nil {
 		return fmt.Errorf("failed to generate verification token: %w", err)
 	}

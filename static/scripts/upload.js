@@ -6,6 +6,12 @@
 const imageBlobMapping = new Map();
 
 /**
+ * Tracks whether an upload is currently in progress
+ * @type {boolean}
+ */
+let isUploading = false;
+
+/**
  * Shows or hides the Upload All button in the .upload-area container based on imageBlobMapping size.
  * The button is created once and appended/removed as needed.
  * @function
@@ -19,11 +25,8 @@ function updateUploadAllBtn() {
         uploadAllBtn.type = 'button';
         uploadAllBtn.textContent = 'Upload All';
         uploadAllBtn.className = 'upload-all-btn';
-        /**
-         * TODO: Implement actual upload logic here
-         */
-        uploadAllBtn.onclick = function () {
-            alert('Upload All clicked!');
+        uploadAllBtn.onclick = async function () {
+            await uploadAllImages();
         };
     }
     if (imageBlobMapping.size > 0) {
@@ -95,6 +98,7 @@ function createPreviewElement(key, blob, type, nameOrUrl) {
     removeBtn.textContent = 'Remove';
     removeBtn.className = 'preview-remove-btn';
     removeBtn.onclick = () => {
+        if (isUploading) return; // Prevent removal during upload
         previewElement.remove();
         imageBlobMapping.delete(key);
         updateUploadAllBtn();
@@ -367,6 +371,228 @@ function handleFiles(files) {
         imageBlobMapping.set(file.name, { blob: file, rating: 'safe', previewElement, type: 'local', nameOrUrl: file.name });
     }
     updateUploadAllBtn();
+}
+
+/**
+ * Uploads all images in the imageBlobMapping to the server.
+ * Shows progress and handles success/error states.
+ */
+async function uploadAllImages() {
+    if (imageBlobMapping.size === 0) return;
+
+    const totalImages = imageBlobMapping.size;
+    let uploadedCount = 0;
+    let hasErrors = false;
+
+    // Set upload state and disable remove buttons
+    isUploading = true;
+    disableAllRemoveButtons();
+
+    // Disable the upload button and show progress
+    uploadAllBtn.disabled = true;
+    updateUploadButtonText(uploadedCount, totalImages, false);
+
+    try {
+        for (const [key, imageData] of imageBlobMapping) {
+            try {
+                // Get the selected rating for this image
+                const selectedRating = getSelectedRating(key);
+                imageData.rating = selectedRating;
+
+                // Create and submit form for this image
+                await uploadSingleImage(imageData, selectedRating);
+
+                // Mark this image as successfully uploaded
+                markImageAsUploaded(imageData.previewElement);
+                uploadedCount++;
+                updateUploadButtonText(uploadedCount, totalImages, false);
+
+            } catch (error) {
+                console.error(`Failed to upload image ${key}:`, error);
+                markImageAsError(imageData.previewElement, error.message);
+                hasErrors = true;
+            }
+        }
+
+        // Update button text based on results
+        if (hasErrors) {
+            updateUploadButtonText(uploadedCount, totalImages, true);
+        } else {
+            uploadAllBtn.textContent = `✓ All ${totalImages} images uploaded successfully!`;
+            uploadAllBtn.className = 'upload-all-btn success';
+
+            // Clear all uploaded images after a delay
+            setTimeout(() => {
+                clearAllUploadedImages();
+            }, 2000);
+        }
+
+    } catch (error) {
+        console.error('Upload process failed:', error);
+        uploadAllBtn.textContent = 'Upload failed - Try again';
+        uploadAllBtn.className = 'upload-all-btn error';
+        uploadAllBtn.disabled = false;
+    } finally {
+        // Reset upload state
+        isUploading = false;
+        enableAllRemoveButtons();
+    }
+}
+
+/**
+ * Disables all remove buttons to prevent removal during upload.
+ */
+function disableAllRemoveButtons() {
+    const removeButtons = document.querySelectorAll('.preview-remove-btn:not(.uploaded):not(.error)');
+    removeButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('uploading');
+    });
+}
+
+/**
+ * Re-enables all remove buttons after upload is complete.
+ */
+function enableAllRemoveButtons() {
+    const removeButtons = document.querySelectorAll('.preview-remove-btn:not(.uploaded):not(.error)');
+    removeButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('uploading');
+    });
+}
+
+/**
+ * Gets the selected rating for an image from its radio buttons.
+ * @param {string} key - The key for the image
+ * @returns {string} The selected rating
+ */
+function getSelectedRating(key) {
+    const checkedInput = document.querySelector(`input[name="rating-${key}"]:checked`);
+    return checkedInput ? checkedInput.value : 'safe';
+}
+
+/**
+ * Uploads a single image to the server by creating a FormData and submitting it.
+ * @param {Object} imageData - The image data object
+ * @param {string} rating - The selected rating
+ * @returns {Promise<void>}
+ */
+async function uploadSingleImage(imageData, rating) {
+    const formData = new FormData();
+
+    // Add the image blob to the form
+    if (imageData.type === 'local') {
+        formData.append('image', imageData.blob, imageData.nameOrUrl);
+    } else {
+        // For link images, create a File object from the blob
+        const file = new File([imageData.blob], 'image.jpg', { type: imageData.blob.type });
+        formData.append('image', file);
+        formData.append('source_url', imageData.nameOrUrl);
+    }
+
+    // Add the rating
+    formData.append('rating', rating);
+
+    // Submit to the backend
+    const response = await fetch('/posts/new', {
+        method: 'POST',
+        body: formData
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        throw new Error(errorText || `Upload failed with status ${response.status}`);
+    }
+
+    return response;
+}
+
+/**
+ * Updates the upload button text to show progress.
+ * @param {number} current - Current number of uploaded images
+ * @param {number} total - Total number of images to upload
+ * @param {boolean} hasErrors - Whether there were errors during upload
+ */
+function updateUploadButtonText(current, total, hasErrors) {
+    if (hasErrors) {
+        uploadAllBtn.textContent = `⚠ Uploaded ${current}/${total} (some failed)`;
+        uploadAllBtn.className = 'upload-all-btn warning';
+        uploadAllBtn.disabled = false;
+    } else if (current === total) {
+        uploadAllBtn.textContent = `✓ All ${total} images uploaded!`;
+        uploadAllBtn.className = 'upload-all-btn success';
+    } else {
+        uploadAllBtn.textContent = `⏳ Uploading (${current}/${total})`;
+        uploadAllBtn.className = 'upload-all-btn uploading';
+    }
+}
+
+/**
+ * Marks an image preview as successfully uploaded.
+ * @param {HTMLElement} previewElement - The preview element to mark
+ */
+function markImageAsUploaded(previewElement) {
+    previewElement.classList.add('uploaded');
+    const removeBtn = previewElement.querySelector('.preview-remove-btn');
+    if (removeBtn) {
+        removeBtn.textContent = '✓ Uploaded';
+        removeBtn.disabled = true;
+        removeBtn.className = 'preview-remove-btn uploaded';
+    }
+}
+
+/**
+ * Marks an image preview as failed to upload.
+ * @param {HTMLElement} previewElement - The preview element to mark
+ * @param {string} errorMessage - The error message to display
+ */
+function markImageAsError(previewElement, errorMessage) {
+    previewElement.classList.add('upload-error');
+    const removeBtn = previewElement.querySelector('.preview-remove-btn');
+    if (removeBtn) {
+        removeBtn.textContent = '✗ Failed';
+        removeBtn.className = 'preview-remove-btn error';
+        removeBtn.title = errorMessage;
+    }
+}
+
+/**
+ * Clears all successfully uploaded images from the preview area.
+ */
+function clearAllUploadedImages() {
+    const uploadedElements = document.querySelectorAll('.preview-area.uploaded');
+    uploadedElements.forEach(element => {
+        const key = getImageKeyFromElement(element);
+        if (key) {
+            imageBlobMapping.delete(key);
+        }
+        element.remove();
+    });
+    updateUploadAllBtn();
+
+    // Reset button state if all images are cleared
+    if (imageBlobMapping.size === 0) {
+        if (uploadAllBtn) {
+            uploadAllBtn.textContent = 'Upload All';
+            uploadAllBtn.className = 'upload-all-btn';
+            uploadAllBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Gets the image key from a preview element by looking at its radio button names.
+ * @param {HTMLElement} previewElement - The preview element
+ * @returns {string|null} The image key or null if not found
+ */
+function getImageKeyFromElement(previewElement) {
+    const radioInput = previewElement.querySelector('input[type="radio"]');
+    if (radioInput && radioInput.name) {
+        // Extract key from "rating-{key}" format
+        const match = radioInput.name.match(/^rating-(.+)$/);
+        return match ? match[1] : null;
+    }
+    return null;
 }
 
 setupLocalImageUpload();

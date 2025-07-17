@@ -1,4 +1,4 @@
-package validators
+package transformers
 
 import "strings"
 

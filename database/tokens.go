@@ -2,12 +2,13 @@ package database
 
 import (
 	"fmt"
+	"imageboard/config"
 	"imageboard/models"
-	"imageboard/utils/validators"
+	"imageboard/utils/transformers"
 	"time"
 )
 
-func GenerateEmailToken(userID int, tokenType models.EmailTokenType) (*models.EmailToken, error) {
+func GenerateEmailToken(userID int, tokenType config.EmailTokenType) (*models.EmailToken, error) {
 	var existingToken models.EmailToken
 	if err := DB.Where("user_id = ? AND type = ?", userID, tokenType).First(&existingToken).Error; err == nil {
 		if err := DB.Delete(&existingToken).Error; err != nil {
@@ -15,18 +16,18 @@ func GenerateEmailToken(userID int, tokenType models.EmailTokenType) (*models.Em
 		}
 	}
 
-	tokenValue, err := validators.GenerateRandomToken()
+	tokenValue, err := transformers.GenerateRandomToken()
 	if err != nil {
 		return nil, err
 	}
 
 	var expirationDuration time.Duration
 	switch tokenType {
-	case models.EmailTokenTypeVerification:
+	case config.EmailTokenTypeVerification:
 		expirationDuration = 24 * time.Hour
-	case models.EmailTokenTypePasswordReset:
+	case config.EmailTokenTypePasswordReset:
 		expirationDuration = 1 * time.Hour
-	case models.EmailTokenTypeChangeEmail:
+	case config.EmailTokenTypeChangeEmail:
 		expirationDuration = 1 * time.Hour
 	default:
 		expirationDuration = 1 * time.Hour
@@ -46,7 +47,7 @@ func GenerateEmailToken(userID int, tokenType models.EmailTokenType) (*models.Em
 	return token, nil
 }
 
-func VerifyToken(token string, tokenType models.EmailTokenType) (*models.EmailToken, error) {
+func VerifyToken(token string, tokenType config.EmailTokenType) (*models.EmailToken, error) {
 	var emailToken models.EmailToken
 	if err := DB.Where("token = ? AND type = ?", token, tokenType).First(&emailToken).Error; err != nil {
 		return nil, err

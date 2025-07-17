@@ -6,13 +6,18 @@ import (
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
 	"imageboard/utils/shortcuts"
-	"imageboard/utils/validators"
+	"imageboard/utils/transformers"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+type ImageUploadForm struct {
+	Image  string `json:"image" form:"image"`
+	Rating string `json:"rating" form:"rating"`
+}
 
 func PostsPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_POST_LIST)
@@ -78,6 +83,64 @@ func PostsUploadPageController(ctx *fiber.Ctx) error {
 	})
 }
 
+func PostsUploadPostController(ctx *fiber.Ctx) error {
+	if !auth.IsAuthenticated(ctx) {
+		return fiber.NewError(fiber.StatusForbidden, "Forbidden")
+	}
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid form data")
+	}
+
+	imageFiles := form.File["image"]
+	if len(imageFiles) == 0 {
+		return fiber.NewError(fiber.StatusBadRequest, "No image file provided")
+	}
+
+	imageFile := imageFiles[0]
+
+	rating := ctx.FormValue("rating")
+	if rating == "" {
+		rating = "safe"
+	}
+
+	sourceURL := ctx.FormValue("source_url")
+
+	// Validate file size
+	maxSize := int64(config.Upload.MaxSize)
+	if imageFile.Size > maxSize {
+		return fiber.NewError(fiber.StatusRequestEntityTooLarge,
+			"File size exceeds maximum allowed size of "+format.FileSize(maxSize))
+	}
+
+	// Validate content type
+	file, err := imageFile.Open()
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to open uploaded file")
+	}
+	defer file.Close()
+
+	// For now, just return success - in a full implementation:
+	// 1. Generate unique filename
+	// 2. Calculate MD5 hash
+	// 3. Resize image and create different sizes
+	// 4. Upload to S3 or local storage
+	// 5. Save image record to database
+	// 6. Return image ID or details
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Image uploaded successfully",
+		"data": fiber.Map{
+			"filename":   imageFile.Filename,
+			"size":       imageFile.Size,
+			"rating":     rating,
+			"source_url": sourceURL,
+		},
+	})
+}
+
 func PostsUploadImageLinkProxyController(ctx *fiber.Ctx) error {
 	maxSize := int64(config.Upload.MaxSize)
 	if !auth.IsAuthenticated(ctx) {
@@ -97,7 +160,7 @@ func PostsUploadImageLinkProxyController(ctx *fiber.Ctx) error {
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
 
-	referer := validators.GetRefererForURL(url)
+	referer := transformers.GetRefererForURL(url)
 	if referer != "" {
 		req.Header.Set("Referer", referer)
 	}

@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"imageboard/config"
 	"imageboard/utils/validators"
 	"strings"
 
@@ -10,15 +11,15 @@ import (
 
 type Tag struct {
 	gorm.Model
-	Name        string  `gorm:"not null;uniqueIndex;size:100" json:"name"`
-	Type        TagType `gorm:"not null;default:'general';size:20" json:"type"`
-	Description string  `gorm:"default:'';type:text" json:"description"`
-	Count       int     `gorm:"not null;default:0" json:"count"`
-	IsDeleted   bool    `gorm:"not null;default:false" json:"is_deleted"`
-	ParentID    *uint   `gorm:"index" json:"-"`
-	Parent      *Tag    `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
-	Children    []Tag   `gorm:"foreignKey:ParentID" json:"children,omitempty"`
-	Images      []Image `gorm:"many2many:image_tags" json:"images,omitempty"`
+	Name        string         `gorm:"not null;uniqueIndex;size:100" json:"name"`
+	Type        config.TagType `gorm:"not null;default:'general';size:20" json:"type"`
+	Description string         `gorm:"default:'';type:text" json:"description"`
+	Count       int            `gorm:"not null;default:0" json:"count"`
+	IsDeleted   bool           `gorm:"not null;default:false" json:"is_deleted"`
+	ParentID    *uint          `gorm:"index" json:"-"`
+	Parent      *Tag           `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
+	Children    []Tag          `gorm:"foreignKey:ParentID" json:"children,omitempty"`
+	Images      []Image        `gorm:"many2many:image_tags" json:"images,omitempty"`
 }
 
 func (t *Tag) BeforeCreate(tx *gorm.DB) error {
@@ -80,7 +81,7 @@ func SearchTagsExcluding(tx *gorm.DB, query string, imageID uint, limit int) ([]
 	return tags, err
 }
 
-func FindOrCreateTag(tx *gorm.DB, name string, tagType TagType) (*Tag, error) {
+func FindOrCreateTag(tx *gorm.DB, name string, tagType config.TagType) (*Tag, error) {
 	name = strings.TrimSpace(strings.ToLower(name))
 
 	// First check for active tag

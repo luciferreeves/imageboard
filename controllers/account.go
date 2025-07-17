@@ -3,7 +3,6 @@ package controllers
 import (
 	"imageboard/config"
 	"imageboard/database"
-	"imageboard/models"
 	"imageboard/utils/auth"
 	"imageboard/utils/shortcuts"
 
@@ -26,7 +25,7 @@ func VerifyEmailController(ctx *fiber.Ctx) error {
 		return renderVerifyEmailError(ctx, config.ERR_VERIFY_EMAIL_MISSING_TOKEN, fiber.StatusBadRequest)
 	}
 
-	emailToken, err := database.VerifyToken(token, models.EmailTokenTypeVerification)
+	emailToken, err := database.VerifyToken(token, config.EmailTokenTypeVerification)
 	if err != nil {
 		return renderVerifyEmailError(ctx, config.ERR_VERIFY_EMAIL_INVALID_OR_EXPIRED_TOKEN, fiber.StatusBadRequest)
 	}

@@ -41,8 +41,8 @@ type S3Config struct {
 	Endpoint        string `env:"S3_ENDPOINT" default:"localhost:9000"`
 	AccessKey       string `env:"S3_ACCESS_KEY" default:"minioadmin"`
 	SecretAccessKey string `env:"S3_SECRET_KEY" default:"minioadmin"`
-	BucketName      string `env:"S3_BUCKET_NAME" default:"shifoo"`
-	FolderPath      string `env:"S3_FOLDER_PATH" default:"imageboard"`
+	BucketName      string `env:"S3_BUCKET_NAME" default:"imageboard"`
+	FolderPath      string `env:"S3_FOLDER_PATH" default:""`
 	Region          string `env:"S3_REGION" default:"us-east-1"`
 	UseSSL          bool   `env:"S3_USE_SSL" default:"false"`
 	PublicURL       string `env:"S3_PUBLIC_URL" default:""`

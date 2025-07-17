@@ -13,23 +13,23 @@ import (
 
 type User struct {
 	gorm.Model
-	Username             string     `gorm:"uniqueIndex;not null;size:255" json:"username"`
-	Email                string     `gorm:"not null;size:255" json:"email"`
-	Password             string     `gorm:"not null;size:255" json:"-"`
-	Level                UserLevel  `gorm:"not null;default:0" json:"level"`
-	EmailVerified        bool       `gorm:"not null;default:false" json:"email_verified"`
-	Bio                  string     `gorm:"default:'';size:500" json:"bio"`
-	AvatarURL            string     `gorm:"default:'';size:255" json:"avatar_url"`
-	WebsiteURL           string     `gorm:"default:'';size:255" json:"website_url"`
-	Location             string     `gorm:"default:'';size:255" json:"location"`
-	Timezone             string     `gorm:"default:'UTC';size:50" json:"timezone"`
-	AccountDisabled      bool       `gorm:"not null;default:false" json:"-"`
-	AccountBanned        bool       `gorm:"not null;default:false" json:"-"`
-	PostsRequireApproval bool       `gorm:"not null;default:false" json:"-"`
-	IsDeleted            bool       `gorm:"not null;default:false" json:"-"`
-	LastLoginAt          *time.Time `gorm:"default:null" json:"last_login_at"`
-	LastActivityAt       *time.Time `gorm:"default:null" json:"last_activity_at"`
-	Images               []Image    `gorm:"foreignKey:UploaderID" json:"images,omitempty"`
+	Username             string           `gorm:"uniqueIndex;not null;size:255" json:"username"`
+	Email                string           `gorm:"not null;size:255" json:"email"`
+	Password             string           `gorm:"not null;size:255" json:"-"`
+	Level                config.UserLevel `gorm:"not null;default:0" json:"level"`
+	EmailVerified        bool             `gorm:"not null;default:false" json:"email_verified"`
+	Bio                  string           `gorm:"default:'';size:500" json:"bio"`
+	AvatarURL            string           `gorm:"default:'';size:255" json:"avatar_url"`
+	WebsiteURL           string           `gorm:"default:'';size:255" json:"website_url"`
+	Location             string           `gorm:"default:'';size:255" json:"location"`
+	Timezone             string           `gorm:"default:'UTC';size:50" json:"timezone"`
+	AccountDisabled      bool             `gorm:"not null;default:false" json:"-"`
+	AccountBanned        bool             `gorm:"not null;default:false" json:"-"`
+	PostsRequireApproval bool             `gorm:"not null;default:false" json:"-"`
+	IsDeleted            bool             `gorm:"not null;default:false" json:"-"`
+	LastLoginAt          *time.Time       `gorm:"default:null" json:"last_login_at"`
+	LastActivityAt       *time.Time       `gorm:"default:null" json:"last_activity_at"`
+	Images               []Image          `gorm:"foreignKey:UploaderID" json:"images,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
@@ -76,7 +76,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	}
 
 	if userCount == 0 {
-		u.Level = UserLevelSuperAdmin // First user becomes Super Admin
+		u.Level = config.UserLevelSuperAdmin // First user becomes Super Admin
 	}
 
 	if len(u.Password) < config.Server.MinPasswordLength {
@@ -143,23 +143,23 @@ func (u *User) CanLogin() bool {
 }
 
 func (u *User) IsAdmin() bool {
-	return u.Level >= UserLevelAdmin
+	return u.Level >= config.UserLevelAdmin
 }
 
 func (u *User) IsModerator() bool {
-	return u.IsActive() && u.Level >= UserLevelModerator
+	return u.IsActive() && u.Level >= config.UserLevelModerator
 }
 
 func (u *User) IsJanitor() bool {
-	return u.IsActive() && u.Level >= UserLevelJanitor
+	return u.IsActive() && u.Level >= config.UserLevelJanitor
 }
 
 func (u *User) IsContributor() bool {
-	return u.IsActive() && u.Level >= UserLevelContributor
+	return u.IsActive() && u.Level >= config.UserLevelContributor
 }
 
 func (u *User) IsMember() bool {
-	return u.IsActive() && u.Level >= UserLevelMember
+	return u.IsActive() && u.Level >= config.UserLevelMember
 }
 
 func (u *User) CanUpload() bool {
@@ -206,28 +206,28 @@ func (u *User) CanEditUser(targetUser *User) bool {
 	return (u.IsAdmin() || u.IsModerator()) && targetUser.Level < u.Level
 }
 
-func (u *User) CanPromoteUser(targetUser *User, newLevel UserLevel) bool {
+func (u *User) CanPromoteUser(targetUser *User, newLevel config.UserLevel) bool {
 	if u.ID == targetUser.ID || targetUser.IsDeleted {
 		return false
 	}
 
-	if u.Level <= UserLevelContributor {
+	if u.Level <= config.UserLevelContributor {
 		return false
 	}
 
-	return newLevel > UserLevelMember && newLevel <= u.Level && newLevel <= UserLevelAdmin
+	return newLevel > config.UserLevelMember && newLevel <= u.Level && newLevel <= config.UserLevelAdmin
 }
 
-func (u *User) CanDemoteUser(targetUser *User, newLevel UserLevel) bool {
+func (u *User) CanDemoteUser(targetUser *User, newLevel config.UserLevel) bool {
 	if u.ID == targetUser.ID || targetUser.IsDeleted {
 		return false
 	}
 
-	if u.Level <= UserLevelContributor {
+	if u.Level <= config.UserLevelContributor {
 		return false
 	}
 
-	return newLevel >= UserLevelMember && newLevel < u.Level && newLevel <= UserLevelAdmin
+	return newLevel >= config.UserLevelMember && newLevel < u.Level && newLevel <= config.UserLevelAdmin
 }
 
 func (u *User) CanDisableUser(targetUser *User) bool {
@@ -255,7 +255,7 @@ func (u *User) CanDeleteUser(targetUser *User) bool {
 		return true // Users can delete their own account
 	}
 
-	if u.Level <= UserLevelContributor {
+	if u.Level <= config.UserLevelContributor {
 		return false
 	}
 
@@ -272,9 +272,9 @@ func (u *User) CanMakeUserPostsRequireApproval(targetUser *User) bool {
 
 func (u *User) GetDailyPostLimit() int {
 	switch u.Level {
-	case UserLevelMember:
+	case config.UserLevelMember:
 		return 10
-	case UserLevelContributor:
+	case config.UserLevelContributor:
 		return 25
 	default:
 		return -1 // No limit for Janitors, Moderators, and Admins

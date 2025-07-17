@@ -13,21 +13,21 @@ func SidebarContextProcessor(ctx *fiber.Ctx) error {
 	popularTags, popularTagsErr := database.GetPopularTags(15)
 	if popularTagsErr != nil || len(popularTags) == 0 {
 		mockTags := []models.Tag{
-			{Name: "anime", Type: models.TagTypeGeneral, Count: 1523},
-			{Name: "manga", Type: models.TagTypeGeneral, Count: 892},
-			{Name: "kawaii", Type: models.TagTypeGeneral, Count: 756},
-			{Name: "retro", Type: models.TagTypeMeta, Count: 634},
-			{Name: "y2k", Type: models.TagTypeMeta, Count: 511},
-			{Name: "aesthetic", Type: models.TagTypeGeneral, Count: 445},
-			{Name: "sakura", Type: models.TagTypeArtist, Count: 389},
-			{Name: "studio_ghibli", Type: models.TagTypeCopyright, Count: 312},
-			{Name: "totoro", Type: models.TagTypeCharacter, Count: 298},
-			{Name: "sailor_moon", Type: models.TagTypeCharacter, Count: 267},
-			{Name: "pokemon", Type: models.TagTypeCopyright, Count: 234},
-			{Name: "pixiv", Type: models.TagTypeMeta, Count: 198},
-			{Name: "digital_art", Type: models.TagTypeMeta, Count: 176},
-			{Name: "watercolor", Type: models.TagTypeGeneral, Count: 145},
-			{Name: "minimalist", Type: models.TagTypeGeneral, Count: 123},
+			{Name: "anime", Type: config.TagTypeGeneral, Count: 1523},
+			{Name: "manga", Type: config.TagTypeGeneral, Count: 892},
+			{Name: "kawaii", Type: config.TagTypeGeneral, Count: 756},
+			{Name: "retro", Type: config.TagTypeMeta, Count: 634},
+			{Name: "y2k", Type: config.TagTypeMeta, Count: 511},
+			{Name: "aesthetic", Type: config.TagTypeGeneral, Count: 445},
+			{Name: "sakura", Type: config.TagTypeArtist, Count: 389},
+			{Name: "studio_ghibli", Type: config.TagTypeCopyright, Count: 312},
+			{Name: "totoro", Type: config.TagTypeCharacter, Count: 298},
+			{Name: "sailor_moon", Type: config.TagTypeCharacter, Count: 267},
+			{Name: "pokemon", Type: config.TagTypeCopyright, Count: 234},
+			{Name: "pixiv", Type: config.TagTypeMeta, Count: 198},
+			{Name: "digital_art", Type: config.TagTypeMeta, Count: 176},
+			{Name: "watercolor", Type: config.TagTypeGeneral, Count: 145},
+			{Name: "minimalist", Type: config.TagTypeGeneral, Count: 123},
 		}
 		ctx.Locals("PopularTags", mockTags)
 	} else {
@@ -37,14 +37,14 @@ func SidebarContextProcessor(ctx *fiber.Ctx) error {
 	recentTags, recentTagsErr := database.GetRecentTags(10)
 	if recentTagsErr != nil || len(recentTags) == 0 {
 		mockRecentTags := []models.Tag{
-			{Name: "cyberpunk", Type: models.TagTypeGeneral, Count: 23},
-			{Name: "vaporwave", Type: models.TagTypeMeta, Count: 45},
-			{Name: "synthwave", Type: models.TagTypeGeneral, Count: 12},
-			{Name: "retrocomputing", Type: models.TagTypeMeta, Count: 8},
-			{Name: "neon", Type: models.TagTypeGeneral, Count: 67},
-			{Name: "glitch", Type: models.TagTypeMeta, Count: 34},
-			{Name: "pixel_art", Type: models.TagTypeGeneral, Count: 89},
-			{Name: "lo_fi", Type: models.TagTypeGeneral, Count: 56},
+			{Name: "cyberpunk", Type: config.TagTypeGeneral, Count: 23},
+			{Name: "vaporwave", Type: config.TagTypeMeta, Count: 45},
+			{Name: "synthwave", Type: config.TagTypeGeneral, Count: 12},
+			{Name: "retrocomputing", Type: config.TagTypeMeta, Count: 8},
+			{Name: "neon", Type: config.TagTypeGeneral, Count: 67},
+			{Name: "glitch", Type: config.TagTypeMeta, Count: 34},
+			{Name: "pixel_art", Type: config.TagTypeGeneral, Count: 89},
+			{Name: "lo_fi", Type: config.TagTypeGeneral, Count: 56},
 		}
 		ctx.Locals("RecentTags", mockRecentTags)
 	} else {
