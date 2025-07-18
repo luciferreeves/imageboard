@@ -137,6 +137,26 @@ func (i *Image) GetOriginalDimensions() string {
 	return "Unknown"
 }
 
+func (i *Image) GetOriginalSize() *ImageSize {
+	return i.GetSize(config.ImageSizeTypeOriginal)
+}
+
+func (i *Image) GetSmallSize() *ImageSize {
+	return i.GetSize(config.ImageSizeTypeSmall)
+}
+
+func (i *Image) GetMediumSize() *ImageSize {
+	return i.GetSize(config.ImageSizeTypeMedium)
+}
+
+func (i *Image) GetLargeSize() *ImageSize {
+	return i.GetSize(config.ImageSizeTypeLarge)
+}
+
+func (i *Image) GetThumbnailSize() *ImageSize {
+	return i.GetSize(config.ImageSizeTypeThumbnail)
+}
+
 func (i *Image) GetAspectRatio() string {
 	if fullSize := i.GetSize(config.ImageSizeTypeOriginal); fullSize != nil {
 		if fullSize.Height == 0 {

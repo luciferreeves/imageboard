@@ -180,7 +180,8 @@ main {
     text-align: center;
 }
 
-.search-container input[type="text"] {
+.search-container input[type="text"],
+.search-container .itext {
     width: 100%;
     flex: 1;
 }
@@ -195,6 +196,7 @@ main {
     align-items: center;
 }
 
+.itext,
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -206,6 +208,7 @@ input[type="url"] {
     padding: 3px 5px;
 }
 
+.itext:focus,
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
@@ -359,7 +362,8 @@ footer::before {
 
 }
 
-.fg-sub input {
+.fg-sub input,
+.fg-sub.itext {
     border-style: double;
     border-width: 3px;
     border-color: #9999ff;

@@ -27,7 +27,6 @@ function handleResize() {
 function switchSize(size) {
     currentSize = size
     const img = document.getElementById('post-image')
-    const container = document.querySelector('.post-image-container')
     const sizeData = sizes[size]
 
     img.className = ''
@@ -69,12 +68,10 @@ function switchSize(size) {
         img.classList.add('fixed-size')
     }
 
-    img.src = sizeData.src
+    if (img.src !== sizeData.src) {
+        img.src = sizeData.src
+    }
     updateSizeSelection(size)
 }
 
 window.addEventListener('resize', handleResize)
-
-window.addEventListener('load', function () {
-    switchSize(currentSize)
-})

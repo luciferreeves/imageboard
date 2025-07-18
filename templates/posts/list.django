@@ -10,7 +10,7 @@
     <div class="post-list">
       {% for image in Posts %}
         <a href="/posts/{{ image.ID }}" class="post-item">
-          <img src="{{ CDNURL }}/thumbnail/{{ image.FileName }}" alt="{{ image.Title }}" width="{{ image.Sizes.1.Width }}" height="{{ image.Sizes.1.Height }}" />
+          <img src="{{ CDNURL }}/thumbnail/{{ image.FileName }}" alt="{{ image.Title }}" width="{{ image.GetThumbnailSize.Width }}" height="{{ image.GetThumbnailSize.Height }}" />
           <div class="post-overlay">
             <div class="post-overlay-top">
               <div class="post-id">ID: {{ image.ID }}</div>

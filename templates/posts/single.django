@@ -1,4 +1,66 @@
 {% extends 'layouts/main.django' %}
+{% block head %}
+  <script type="text/javascript" src="/static/scripts/resize.js"></script>
+  <script type="text/javascript">
+    const sizes = {
+      fitBoth: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
+        width: '{{ Post.GetMediumSize.Width }}',
+        height: '{{ Post.GetMediumSize.Height }}'
+      },
+      fitWidth: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
+        width: '{{ Post.GetMediumSize.Width }}',
+        height: '{{ Post.GetMediumSize.Height }}'
+      },
+      fitHeight: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
+        width: '{{ Post.GetMediumSize.Width }}',
+        height: '{{ Post.GetMediumSize.Height }}'
+      },
+      small: {
+        src: '{{ CDNURL }}/small/{{ Post.FileName }}',
+        width: '{{ Post.GetSmallSize.Width }}',
+        height: '{{ Post.GetSmallSize.Height }}'
+      },
+      medium: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
+        width: '{{ Post.GetMediumSize.Width }}',
+        height: '{{ Post.GetMediumSize.Height }}'
+      },
+      large: {
+        src: '{{ CDNURL }}/large/{{ Post.FileName }}',
+        width: '{{ Post.GetLargeSize.Width }}',
+        height: '{{ Post.GetLargeSize.Height }}'
+      },
+      original: {
+        src: '{{ CDNURL }}/original/{{ Post.FileName }}',
+        width: '{{ Post.GetOriginalSize.Width }}',
+        height: '{{ Post.GetOriginalSize.Height }}'
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      const imageWidth = parseInt('{{ Post.GetMediumSize.Width }}')
+      const imageHeight = parseInt('{{ Post.GetMediumSize.Height }}')
+      const img = document.getElementById('post-image')
+    
+      if (img) {
+        const availableHeight = getAvailableHeight()
+    
+        if (imageHeight > imageWidth) {
+          const ratio = availableHeight / imageHeight
+          img.style.width = Math.floor(imageWidth * ratio) + 'px'
+          img.style.height = availableHeight + 'px'
+        } else {
+          const containerWidth = document.querySelector('.post-image-container').offsetWidth
+          const ratio = containerWidth / imageWidth
+          img.style.width = containerWidth + 'px'
+          img.style.height = Math.floor(imageHeight * ratio) + 'px'
+        }
+      }
+    })
+  </script>
+{% endblock %}
 {% block content %}
   {% if Error %}
     <div class="centered-main">
@@ -25,42 +87,24 @@
       <div class="post-image-container">
         <img src="{{ CDNURL }}/medium/{{ Post.FileName }}" alt="{{ Post.Title }}" id="post-image" />
       </div>
+      <div class="post-details">
+        <div class="post-detail-item">
+          <span class="post-detail-label">ID:</span>
+          <span class="post-detail-value">{{ Post.ID }}</span>
+        </div>
+        <div class="post-detail-item">
+          <span class="post-detail-label">Uploader:</span>
+          <span class="post-detail-value"><a href="/u/{{ Post.Uploader.Username }}">{{ Post.Uploader.Username }}</a></span>
+        </div>
+        <div class="post-detail-item">
+          <span class="post-detail-label">Created:</span>
+          <span class="post-detail-value">{{ Post.CreatedAt|naturaltime }}</span>
+        </div>
+        <div class="post-detail-item">
+          <span class="post-detail-label">Original Size:</span>
+          <span class="post-detail-value">{{ Post.GetOriginalSize.Width }}x{{ Post.GetOriginalSize.Height }} ({{ Post.GetOriginalSize.GetFileSizeFormatted }})</span>
+        </div>
+      </div>
     </div>
   {% endif %}
-{% endblock %}
-{% block scripts %}
-  <script type="text/javascript">
-    const sizes = {
-      fitBoth: {
-        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
-      },
-      fitWidth: {
-        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
-      },
-      fitHeight: {
-        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
-      },
-      small: {
-        src: '{{ CDNURL }}/small/{{ Post.FileName }}',
-        width: '{{ Post.Sizes.2.Width }}',
-        height: '{{ Post.Sizes.2.Height }}'
-      },
-      medium: {
-        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
-        width: '{{ Post.Sizes.3.Width }}',
-        height: '{{ Post.Sizes.3.Height }}'
-      },
-      large: {
-        src: '{{ CDNURL }}/large/{{ Post.FileName }}',
-        width: '{{ Post.Sizes.4.Width }}',
-        height: '{{ Post.Sizes.4.Height }}'
-      },
-      original: {
-        src: '{{ CDNURL }}/original/{{ Post.FileName }}',
-        width: '{{ Post.Sizes.5.Width }}',
-        height: '{{ Post.Sizes.5.Height }}'
-      }
-    }
-  </script>
-  <script type="text/javascript" src="/static/scripts/resize.js"></script>
 {% endblock %}

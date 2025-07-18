@@ -1,7 +1,7 @@
 <div class="search-container">
   <form action="/posts" method="GET">
     <h3>« Search Posts »</h3>
-    <input type="text" name="tags" class="search-tags-input" placeholder="enter some tags..." value="{{ QueryTags|default_if_none:'' }}" autocomplete="off" aria-label="Search tags" />
+    <input type="text" class="itext" name="tags" class="search-tags-input" placeholder="enter some tags..." value="{{ QueryTags|default_if_none:'' }}" autocomplete="off" aria-label="Search tags" />
     <input type="submit" value="Search" />
     <input type="button" value="Clear" onclick="this.form.tags.value='';" />
     <div class="rating-toggles">

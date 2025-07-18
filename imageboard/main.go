@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"imageboard/config"
+	"imageboard/filters"
 	"imageboard/middleware"
 	"imageboard/processors"
 	"imageboard/router"
@@ -24,6 +25,7 @@ func main() {
 		log.Println("Warning: AppSecret is set to a default value which is not secure. Please set a strong random secret in your APP_SECRET environment variable or .env file.")
 	}
 
+	filters.Initialize()
 	engine := django.New("./templates", ".django")
 	engine.Reload(config.Server.IsDevMode)
 	app := fiber.New(fiber.Config{
