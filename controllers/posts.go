@@ -299,9 +299,51 @@ func PostsSinglePostPageController(ctx *fiber.Ctx) error {
 		return renderSinglePostError(ctx, "Failed to retrieve post. "+err.Error(), fiber.StatusInternalServerError)
 	}
 
+	currentUser := auth.GetCurrentUser(ctx)
+	isUserFavourited := false
+	if currentUser != nil {
+		isUserFavourited = post.IsUserFavourited(database.DB, currentUser)
+	}
+
 	ctx.Locals("Title", config.PT_POST_SINGLE+" #"+format.Int64ToString(int64(post.ID)))
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_SINGLE, fiber.Map{
-		"Post":   post,
-		"CDNURL": format.GetCDNURL(),
+		"Post":             post,
+		"CDNURL":           format.GetCDNURL(),
+		"IsUserFavourited": isUserFavourited,
 	})
+}
+
+func PostsSinglePostFavouriteController(ctx *fiber.Ctx) error {
+	if !auth.IsAuthenticated(ctx) {
+		return ctx.Redirect(auth.GetLoginURLWithNextField(ctx), fiber.StatusFound)
+	}
+
+	postID := ctx.Params("id")
+	if postID == "" {
+		return renderSinglePostError(ctx, "Post ID is required", fiber.StatusBadRequest)
+	}
+
+	uintPostID, err := format.StringToUint(postID)
+	if err != nil {
+		return renderSinglePostError(ctx, "Invalid Post ID", fiber.StatusBadRequest)
+	}
+
+	post, err := database.GetPostByID(uintPostID)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return renderSinglePostError(ctx, "Post not found", fiber.StatusNotFound)
+		}
+		return renderSinglePostError(ctx, "Failed to retrieve post. "+err.Error(), fiber.StatusInternalServerError)
+	}
+
+	currentUser := auth.GetCurrentUser(ctx)
+	if currentUser == nil {
+		return renderSinglePostError(ctx, "User not found", fiber.StatusUnauthorized)
+	}
+
+	if err := post.ToggleFavourite(database.DB, currentUser); err != nil {
+		return renderSinglePostError(ctx, "Failed to toggle favourite. "+err.Error(), fiber.StatusInternalServerError)
+	}
+
+	return ctx.Redirect("/posts/" + postID)
 }

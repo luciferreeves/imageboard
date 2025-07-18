@@ -845,6 +845,7 @@ footer::before {
 #post-image {
     display: block;
     height: auto;
+    margin-bottom: 8px;
 }
 
 #post-image.fit-width {
@@ -867,4 +868,56 @@ footer::before {
     width: auto;
     height: auto;
     max-width: none;
+}
+
+.post-details {
+    margin: 4px auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+.post-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.post-detail-label {
+    color: #cccccc;
+    white-space: nowrap;
+}
+
+.post-favourite-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.post-favourite-actions form {
+    margin: 0;
+    padding: 0;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #99ccff;
+    transition: color 0.3s ease;
+}
+
+.icon-button:hover {
+    color: #99ffcc;
+}
+
+.icon-button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }

@@ -175,31 +175,6 @@ func (i *Image) GetAspectRatio() string {
 	return "Unknown"
 }
 
-func (i *Image) AddSize(tx *gorm.DB, sizeType config.ImageSizeType, width, height int, fileSize int64) (*ImageSize, error) {
-	if width <= 0 || height <= 0 {
-		return nil, fmt.Errorf("image dimensions must be greater than zero")
-	}
-
-	if fileSize <= 0 {
-		return nil, fmt.Errorf("file size must be greater than zero")
-	}
-
-	size := &ImageSize{
-		ImageID:  i.ID,
-		SizeType: sizeType,
-		Width:    width,
-		Height:   height,
-		FileSize: fileSize,
-	}
-
-	if err := tx.Create(size).Error; err != nil {
-		return nil, fmt.Errorf("failed to create image size: %v", err)
-	}
-
-	i.Sizes = append(i.Sizes, *size)
-	return size, nil
-}
-
 func (i *Image) AddRelatedImage(tx *gorm.DB, relatedImage *Image) error {
 	if relatedImage.ID == 0 {
 		return fmt.Errorf("related image must be saved before adding relationship")
@@ -318,4 +293,36 @@ func (i *Image) DeleteImage(tx *gorm.DB) error {
 	}
 	i.IsDeleted = true
 	return tx.Save(i).Error
+}
+
+func (i *Image) ToggleFavourite(tx *gorm.DB, user *User) error {
+	if i.IsDeleted {
+		return fmt.Errorf("cannot favourite deleted image")
+	}
+
+	var count int64
+	if err := tx.Table("user_favorites").Where("user_id = ? AND image_id = ?", user.ID, i.ID).Count(&count).Error; err != nil {
+		return err
+	}
+
+	if count > 0 {
+		if err := tx.Model(user).Association("FavoritedImages").Delete(i); err != nil {
+			return err
+		}
+		return tx.Model(i).UpdateColumn("favourite_count", gorm.Expr("GREATEST(favourite_count - ?, 0)", 1)).Error
+	} else {
+		if err := tx.Model(user).Association("FavoritedImages").Append(i); err != nil {
+			return err
+		}
+		return tx.Model(i).UpdateColumn("favourite_count", gorm.Expr("favourite_count + ?", 1)).Error
+	}
+}
+
+func (i *Image) IsUserFavourited(tx *gorm.DB, user *User) bool {
+	if user == nil {
+		return false
+	}
+	var count int64
+	tx.Table("user_favorites").Where("user_id = ? AND image_id = ?", user.ID, i.ID).Count(&count)
+	return count > 0
 }

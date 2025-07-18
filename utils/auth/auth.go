@@ -54,6 +54,10 @@ func GetLoginURLWithRedirect(ctx *fiber.Ctx) string {
 	return config.URL_LOGIN + "?next=" + url.QueryEscape(currentPath)
 }
 
+func GetLoginURLWithNextField(ctx *fiber.Ctx) string {
+	return config.URL_LOGIN + "?next=" + url.QueryEscape(GetRedirectURL(ctx))
+}
+
 func GetLogoutURLWithRedirect(ctx *fiber.Ctx) string {
 	currentPath := ctx.Path()
 	if queryString := string(ctx.Request().URI().QueryString()); queryString != "" {

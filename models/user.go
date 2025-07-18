@@ -30,6 +30,7 @@ type User struct {
 	LastLoginAt          *time.Time       `gorm:"default:null" json:"last_login_at"`
 	LastActivityAt       *time.Time       `gorm:"default:null" json:"last_activity_at"`
 	Images               []Image          `gorm:"foreignKey:UploaderID" json:"images,omitempty"`
+	FavoritedImages      []Image          `gorm:"many2many:user_favorites" json:"favorited_images,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
