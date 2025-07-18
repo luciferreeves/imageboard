@@ -6,11 +6,12 @@ const (
 	PT_LOGIN        = "Login"
 	PT_POST_LIST    = "Posts"
 	PT_POST_NEW     = "Upload New Post"
+	PT_POST_SINGLE  = "Post"
+	PT_POST_EDIT    = "Edit Post"
 	PT_PREFERENCES  = "Preferences"
 	PT_REGISTER     = "Register"
 	PT_404          = "Page Not Found"
 	PT_VERIFY_EMAIL = "Verify Email"
-	PT_POST_SINGLE  = "Post"
 
 	// Template names
 	TEMPLATE_HOME         = "home"
@@ -18,9 +19,10 @@ const (
 	TEMPLATE_POST_LIST    = "posts/list"
 	TEMPLATE_POST_NEW     = "posts/new"
 	TEMPLATE_POST_SINGLE  = "posts/single"
+	TEMPLATE_POST_EDIT    = "posts/edit"
 	TEMPLATE_PREFERENCES  = "preferences"
 	TEMPLATE_REGISTER     = "register"
-	TEMPLATE_404          = "404"
+	TEMPLATE_ERROR        = "error"
 	TEMPLATE_VERIFY_EMAIL = "account/verify_email"
 
 	// URL constants for various routes
@@ -44,6 +46,8 @@ const (
 	ERR_PASSWORD_MISMATCH                     = "Entered passwords do not match. Ensure both fields are identical."
 	ERR_SESSION_FAILED_TO_CREATE              = "Server failed to create a session. If this issue persists, contact support."
 	ERR_SESSION_FAILED_TO_SAVE                = "Server failed to save session data. If this issue persists, contact support."
+	ERR_REGISTER_FAILED_TO_CREATE_USER        = "Failed to create user account: "
+	ERR_REGISTER_USER_CREATED_EMAIL_FAILED    = "User account created, but failed to send verification email."
 	ERR_VERIFY_EMAIL_MISSING_TOKEN            = `Verification token is missing. Check the link you clicked or request a <a href="` + URL_RESEND_VERIFICATION + `">new verification email</a>.`
 	ERR_VERIFY_EMAIL_INVALID_OR_EXPIRED_TOKEN = `The verification token is either invalid or has expired. Try requesting a <a href="` + URL_RESEND_VERIFICATION + `">new verification email</a>.`
 	ERR_VERIFY_EMAIL_USER_NOT_FOUND           = `User not found for the provided verification token. If you think this is an error, contact support.`

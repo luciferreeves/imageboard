@@ -20,14 +20,6 @@ type RegisterForm struct {
 	ConfirmPassword string `json:"confirm_password" form:"confirm_password"`
 }
 
-func renderRegisterError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
-	return shortcuts.RenderWithStatus(ctx, config.TEMPLATE_REGISTER, fiber.Map{
-		"Error":    errorMsg,
-		"Username": ctx.FormValue("username"),
-		"Email":    ctx.FormValue("email"),
-	}, statusCode)
-}
-
 func RegisterPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_REGISTER)
 
@@ -46,12 +38,23 @@ func RegisterPostController(ctx *fiber.Ctx) error {
 	}
 
 	var form RegisterForm
+	handleRegisterError := func(errorMessage string, statusCode int) error {
+		return TemplateErrorController(ctx, TemplateError{
+			Template:     config.TEMPLATE_REGISTER,
+			ErrorMessage: errorMessage,
+			StatusCode:   statusCode,
+		}, fiber.Map{
+			"Username": form.Username,
+			"Email":    form.Email,
+		})
+	}
+
 	if err := ctx.BodyParser(&form); err != nil {
-		return renderRegisterError(ctx, config.ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
+		return handleRegisterError(config.ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
 	}
 
 	if form.Password != form.ConfirmPassword {
-		return renderRegisterError(ctx, config.ERR_PASSWORD_MISMATCH, fiber.StatusBadRequest)
+		return handleRegisterError(config.ERR_PASSWORD_MISMATCH, fiber.StatusBadRequest)
 	}
 
 	user := &models.User{
@@ -70,12 +73,12 @@ func RegisterPostController(ctx *fiber.Ctx) error {
 			statusCode = fiber.StatusInternalServerError
 		}
 
-		return renderRegisterError(ctx, "Failed to create user: "+err.Error(), statusCode)
+		return handleRegisterError(config.ERR_REGISTER_FAILED_TO_CREATE_USER+err.Error(), statusCode)
 	}
 
 	if err := email.SendVerificationEmail(user); err != nil {
 		log.Printf("Failed to send verification email: %v", err)
-		return renderRegisterError(ctx, "User created but failed to send verification email", fiber.StatusInternalServerError)
+		return handleRegisterError(config.ERR_REGISTER_USER_CREATED_EMAIL_FAILED, fiber.StatusInternalServerError)
 	}
 
 	return shortcuts.Render(ctx, config.TEMPLATE_REGISTER, fiber.Map{

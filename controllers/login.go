@@ -15,13 +15,6 @@ type LoginForm struct {
 	Password string `json:"password" form:"password"`
 }
 
-func renderLoginError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
-	return shortcuts.RenderWithStatus(ctx, config.TEMPLATE_LOGIN, fiber.Map{
-		"Error":    errorMsg,
-		"Username": ctx.FormValue("username"), // Preserve username in form
-	}, statusCode)
-}
-
 func LoginPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_LOGIN)
 
@@ -40,35 +33,45 @@ func LoginPostController(ctx *fiber.Ctx) error {
 
 	var form LoginForm
 	var err error
+	handleLoginError := func(errorMessage string, statusCode int) error {
+		return TemplateErrorController(ctx, TemplateError{
+			Template:     config.TEMPLATE_LOGIN,
+			ErrorMessage: errorMessage,
+			StatusCode:   statusCode,
+		}, fiber.Map{
+			"Username": form.Username,
+		})
+	}
+
 	if err = ctx.BodyParser(&form); err != nil {
-		return renderLoginError(ctx, config.ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
+		return handleLoginError(config.ERR_INVALID_FORM_DATA, fiber.StatusBadRequest)
 	}
 
 	user, err := database.GetUserByUsername(form.Username)
 	if err != nil {
-		return renderLoginError(ctx, config.ERR_USER_NOT_FOUND, fiber.StatusUnauthorized)
+		return handleLoginError(config.ERR_USER_NOT_FOUND, fiber.StatusUnauthorized)
 	}
 
 	if !user.CheckPassword(form.Password) {
-		return renderLoginError(ctx, config.ERR_LOGIN_INVALID_CREDENTIALS, fiber.StatusUnauthorized)
+		return handleLoginError(config.ERR_LOGIN_INVALID_CREDENTIALS, fiber.StatusUnauthorized)
 	}
 
 	if !user.IsActive() {
-		return renderLoginError(ctx, config.ERR_ACCOUNT_DISABLED, fiber.StatusForbidden)
+		return handleLoginError(config.ERR_ACCOUNT_DISABLED, fiber.StatusForbidden)
 	}
 
 	if !user.CanLogin() {
-		return renderLoginError(ctx, config.ERR_ACCOUNT_UNABLE_TO_LOGIN, fiber.StatusForbidden)
+		return handleLoginError(config.ERR_ACCOUNT_UNABLE_TO_LOGIN, fiber.StatusForbidden)
 	}
 
 	sess, err := session.Store.Get(ctx)
 	if err != nil {
-		return renderLoginError(ctx, config.ERR_SESSION_FAILED_TO_CREATE, fiber.StatusInternalServerError)
+		return handleLoginError(config.ERR_SESSION_FAILED_TO_CREATE, fiber.StatusInternalServerError)
 	}
 	sess.Set("user_id", user.ID)
 	sess.Set("username", user.Username)
 	if err := sess.Save(); err != nil {
-		return renderLoginError(ctx, config.ERR_SESSION_FAILED_TO_SAVE, fiber.StatusInternalServerError)
+		return handleLoginError(config.ERR_SESSION_FAILED_TO_SAVE, fiber.StatusInternalServerError)
 	}
 
 	user.UpdateLastUserLogin(database.DB)

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"imageboard/config"
 	"imageboard/database"
 	"imageboard/utils/auth"
@@ -10,7 +11,6 @@ import (
 	"imageboard/utils/shortcuts"
 	"imageboard/utils/transformers"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -39,7 +39,7 @@ func PostsPageController(ctx *fiber.Ctx) error {
 
 	posts, err := database.GetPosts(preferences.PostsPerPage, queryRatings, queryTagsList)
 	if err != nil {
-		log.Println(err)
+		return InternalServerErrorController(ctx, err)
 	}
 
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_LIST, fiber.Map{
@@ -272,31 +272,25 @@ func PostsUploadImageLinkProxyController(ctx *fiber.Ctx) error {
 	return ctx.Send(buf)
 }
 
-func renderSinglePostError(ctx *fiber.Ctx, errorMsg string, statusCode int) error {
-	return shortcuts.RenderWithStatus(ctx, config.TEMPLATE_POST_SINGLE, fiber.Map{
-		"Error": errorMsg,
-	}, statusCode)
-}
-
 func PostsSinglePostPageController(ctx *fiber.Ctx) error {
 	ctx.Locals("Title", config.PT_POST_SINGLE)
 
 	postID := ctx.Params("id")
 	if postID == "" {
-		return renderSinglePostError(ctx, "Post ID is required", fiber.StatusBadRequest)
+		return NotFoundController(ctx)
 	}
 
 	uintPostID, err := format.StringToUint(postID)
 	if err != nil {
-		return renderSinglePostError(ctx, "Invalid Post ID", fiber.StatusBadRequest)
+		return NotFoundController(ctx)
 	}
 
 	post, err := database.GetPostByID(uintPostID)
 	if err != nil {
 		if err.Error() == "record not found" {
-			return renderSinglePostError(ctx, "Post not found", fiber.StatusNotFound)
+			return NotFoundController(ctx)
 		}
-		return renderSinglePostError(ctx, "Failed to retrieve post. "+err.Error(), fiber.StatusInternalServerError)
+		return InternalServerErrorController(ctx, err)
 	}
 
 	currentUser := auth.GetCurrentUser(ctx)
@@ -320,30 +314,64 @@ func PostsSinglePostFavouriteController(ctx *fiber.Ctx) error {
 
 	postID := ctx.Params("id")
 	if postID == "" {
-		return renderSinglePostError(ctx, "Post ID is required", fiber.StatusBadRequest)
+		return NotFoundController(ctx)
 	}
 
 	uintPostID, err := format.StringToUint(postID)
 	if err != nil {
-		return renderSinglePostError(ctx, "Invalid Post ID", fiber.StatusBadRequest)
+		return NotFoundController(ctx)
 	}
 
 	post, err := database.GetPostByID(uintPostID)
 	if err != nil {
 		if err.Error() == "record not found" {
-			return renderSinglePostError(ctx, "Post not found", fiber.StatusNotFound)
+			return NotFoundController(ctx)
 		}
-		return renderSinglePostError(ctx, "Failed to retrieve post. "+err.Error(), fiber.StatusInternalServerError)
+		return InternalServerErrorController(ctx, err)
 	}
 
 	currentUser := auth.GetCurrentUser(ctx)
 	if currentUser == nil {
-		return renderSinglePostError(ctx, "User not found", fiber.StatusUnauthorized)
+		return UnauthorizedController(ctx, errors.New("User not found"))
 	}
 
 	if err := post.ToggleFavourite(database.DB, currentUser); err != nil {
-		return renderSinglePostError(ctx, "Failed to toggle favourite. "+err.Error(), fiber.StatusInternalServerError)
+		return InternalServerErrorController(ctx, err)
 	}
 
 	return ctx.Redirect("/posts/" + postID)
+}
+
+func PostsSinglePostEditController(ctx *fiber.Ctx) error {
+	if !auth.IsAuthenticated(ctx) {
+		return ctx.Redirect(auth.GetLoginURLWithNextField(ctx), fiber.StatusFound)
+	}
+
+	postID := ctx.Params("id")
+	if postID == "" {
+		return NotFoundController(ctx)
+	}
+
+	uintPostID, err := format.StringToUint(postID)
+	if err != nil {
+		return NotFoundController(ctx)
+	}
+
+	post, err := database.GetPostByID(uintPostID)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return NotFoundController(ctx)
+		}
+		return InternalServerErrorController(ctx, err)
+	}
+
+	if post.Uploader.Username != auth.GetCurrentUser(ctx).Username || !auth.GetCurrentUser(ctx).CanEditPosts() {
+		return ForbiddenController(ctx, errors.New("You do not have permission to edit this post"))
+	}
+
+	ctx.Locals("Title", config.PT_POST_EDIT+" #"+format.Int64ToString(int64(post.ID)))
+	return shortcuts.Render(ctx, config.TEMPLATE_POST_EDIT, fiber.Map{
+		"Post":   post,
+		"CDNURL": format.GetCDNURL(),
+	})
 }
