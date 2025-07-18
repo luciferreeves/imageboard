@@ -10,12 +10,12 @@
         <span class="checkbox-custom safe"></span>
       </label>
       <label class="rating-checkbox">
-        <input type="checkbox" name="rating" value="questionable" {{ QueryRatings.Questionable|yesno:'checked,' }} />
-        <span class="checkbox-custom questionable"></span>
-      </label>
-      <label class="rating-checkbox">
         <input type="checkbox" name="rating" value="sensitive" {{ QueryRatings.Sensitive|yesno:'checked,' }} />
         <span class="checkbox-custom sensitive"></span>
+      </label>
+      <label class="rating-checkbox">
+        <input type="checkbox" name="rating" value="questionable" {{ QueryRatings.Questionable|yesno:'checked,' }} />
+        <span class="checkbox-custom questionable"></span>
       </label>
       <label class="rating-checkbox">
         <input type="checkbox" name="rating" value="explicit" {{ QueryRatings.Explicit|yesno:'checked,' }} />

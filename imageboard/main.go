@@ -42,8 +42,6 @@ func main() {
 	processors.Initialize(app)
 	middleware.Initialize(app)
 
-	app.Static("/static", "./static")
-
 	router.Initialize(app)
 
 	log.Fatalf("Server failed to start: %v", app.Listen(fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)))

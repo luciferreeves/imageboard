@@ -51,8 +51,8 @@ type Rating string
 
 const (
 	RatingSafe         Rating = "Safe"
-	RatingQuestionable Rating = "Questionable"
 	RatingSensitive    Rating = "Sensitive"
+	RatingQuestionable Rating = "Questionable"
 	RatingExplicit     Rating = "Explicit"
 )
 

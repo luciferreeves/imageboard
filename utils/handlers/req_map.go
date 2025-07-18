@@ -14,12 +14,12 @@ func ExtractRatingsAndMap(queryParams []config.QueryParam) ([]config.Rating, map
 			case "safe":
 				ratings = append(ratings, config.RatingSafe)
 				ratingsMap["Safe"] = true
-			case "questionable":
-				ratings = append(ratings, config.RatingQuestionable)
-				ratingsMap["Questionable"] = true
 			case "sensitive":
 				ratings = append(ratings, config.RatingSensitive)
 				ratingsMap["Sensitive"] = true
+			case "questionable":
+				ratings = append(ratings, config.RatingQuestionable)
+				ratingsMap["Questionable"] = true
 			case "explicit":
 				ratings = append(ratings, config.RatingExplicit)
 				ratingsMap["Explicit"] = true
@@ -29,12 +29,12 @@ func ExtractRatingsAndMap(queryParams []config.QueryParam) ([]config.Rating, map
 	if len(ratings) == 0 {
 		ratings = []config.Rating{
 			config.RatingSafe,
-			config.RatingQuestionable,
 			config.RatingSensitive,
+			config.RatingQuestionable,
 		}
 		ratingsMap["Safe"] = true
-		ratingsMap["Questionable"] = true
 		ratingsMap["Sensitive"] = true
+		ratingsMap["Questionable"] = true
 	}
 	return ratings, ratingsMap
 }

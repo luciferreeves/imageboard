@@ -7,6 +7,8 @@ import (
 )
 
 func Initialize(router *fiber.App) {
+	router.Static("/static", "./static")
+
 	main := router.Group("/")
 	main.Get("/", controllers.HomePageController)
 

@@ -77,7 +77,7 @@ function createPreviewElement(key, blob, type, nameOrUrl) {
 
     const previewRatingForm = document.createElement('form');
     previewRatingForm.className = 'preview-rating-form';
-    ['Safe', 'Questionable', 'Sensitive', 'Explicit'].forEach((rating, idx) => {
+    ['Safe', 'Sensitive', 'Questionable', 'Explicit'].forEach((rating, idx) => {
         const inputId = `rating-${rating.toLowerCase()}-${key}`;
         const input = document.createElement('input');
         input.type = 'radio';
@@ -625,6 +625,7 @@ function showImageProgress(previewElement) {
         height: 100%;
         width: 0%;
         background-color: #4a9eff;
+        transition: width 0.3s ease;
     `;
 
     progressContainer.appendChild(progressBar);
@@ -663,7 +664,7 @@ function animateProgress(progressBar, duration) {
         if (isCompleted) return;
 
         const elapsed = Date.now() - startTime;
-        const timeRatio = elapsed / (duration * 4);
+        const timeRatio = elapsed / duration;
 
         let targetProgress;
         if (timeRatio < 0.2) {

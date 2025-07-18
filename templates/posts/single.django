@@ -5,6 +5,62 @@
       <div class="error">{{ Error }}</div>
     </div>
   {% else %}
-    Single Post
+    <div class="single-post">
+      <div class="single-post-bar">
+        {% if Post.Title %}
+          <h1 class="post-title">{{ Post.Title }}</h1>
+        {% else %}
+          <h1 class="post-title">Post #{{ Post.ID }}</h1>
+        {% endif %}
+        <div class="single-post-bar-size-actions">
+          <a href="javascript:void(0);" onclick="switchSize('fitBoth');" class="size-selected">Fit-Both</a>
+          <a href="javascript:void(0);" onclick="switchSize('fitHeight');">Fit-Height</a>
+          <a href="javascript:void(0);" onclick="switchSize('fitWidth');">Fit-Width</a>
+          <a href="javascript:void(0);" onclick="switchSize('small');">Small</a>
+          <a href="javascript:void(0);" onclick="switchSize('medium');">Medium</a>
+          <a href="javascript:void(0);" onclick="switchSize('large');">Large</a>
+          <a href="javascript:void(0);" onclick="switchSize('original');">Original</a>
+        </div>
+      </div>
+      <div class="post-image-container">
+        <img src="{{ CDNURL }}/medium/{{ Post.FileName }}" alt="{{ Post.Title }}" id="post-image" />
+      </div>
+    </div>
   {% endif %}
+{% endblock %}
+{% block scripts %}
+  <script type="text/javascript">
+    const sizes = {
+      fitBoth: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
+      },
+      fitWidth: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
+      },
+      fitHeight: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}'
+      },
+      small: {
+        src: '{{ CDNURL }}/small/{{ Post.FileName }}',
+        width: '{{ Post.Sizes.2.Width }}',
+        height: '{{ Post.Sizes.2.Height }}'
+      },
+      medium: {
+        src: '{{ CDNURL }}/medium/{{ Post.FileName }}',
+        width: '{{ Post.Sizes.3.Width }}',
+        height: '{{ Post.Sizes.3.Height }}'
+      },
+      large: {
+        src: '{{ CDNURL }}/large/{{ Post.FileName }}',
+        width: '{{ Post.Sizes.4.Width }}',
+        height: '{{ Post.Sizes.4.Height }}'
+      },
+      original: {
+        src: '{{ CDNURL }}/original/{{ Post.FileName }}',
+        width: '{{ Post.Sizes.5.Width }}',
+        height: '{{ Post.Sizes.5.Height }}'
+      }
+    }
+  </script>
+  <script type="text/javascript" src="/static/scripts/resize.js"></script>
 {% endblock %}
