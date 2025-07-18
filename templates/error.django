@@ -1,0 +1,8 @@
+{% extends 'layouts/main.django' %}
+{% block content %}
+  <div class="centered-main">
+    <img src="/static/images/54a1a92a6d78ed091071255803c7057e.webp" class="q-img" />
+    <h1>{{ Title }}</h1>
+    <p>{{ Error|safe }}</p>
+  </div>
+{% endblock %}

@@ -45,7 +45,16 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 		return fmt.Errorf("email cannot be empty")
 	}
 
-	if len(u.Username) < 3 {
+	var userCount int64
+	if err := tx.Model(&User{}).Where("is_deleted = ?", false).Count(&userCount).Error; err != nil {
+		return fmt.Errorf("failed to count existing users: %v", err)
+	}
+
+	if userCount == 0 {
+		u.Level = config.UserLevelSuperAdmin // First user becomes Super Admin
+	}
+
+	if len(u.Username) < 3 && u.Level < config.UserLevelSuperAdmin {
 		return fmt.Errorf("username must be at least 3 characters long")
 	}
 
@@ -57,7 +66,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 		return fmt.Errorf("username can only contain letters, numbers, underscores, and hyphens")
 	}
 
-	if validators.IsReservedUsername(u.Username) {
+	if validators.IsReservedUsername(u.Username) && u.Level < config.UserLevelSuperAdmin {
 		return fmt.Errorf("username '%s' is reserved and cannot be used", u.Username)
 	}
 
@@ -69,15 +78,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	var existingUser User
 	if err := tx.Where("username = ?", u.Username).First(&existingUser).Error; err == nil {
 		return fmt.Errorf("username '%s' is already taken", u.Username)
-	}
-
-	var userCount int64
-	if err := tx.Model(&User{}).Where("is_deleted = ?", false).Count(&userCount).Error; err != nil {
-		return fmt.Errorf("failed to count existing users: %v", err)
-	}
-
-	if userCount == 0 {
-		u.Level = config.UserLevelSuperAdmin // First user becomes Super Admin
 	}
 
 	if len(u.Password) < config.Server.MinPasswordLength {

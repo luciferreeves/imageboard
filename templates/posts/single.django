@@ -82,8 +82,8 @@
           <a href="javascript:void(0);" onclick="switchSize('medium');">Medium</a>
           <a href="javascript:void(0);" onclick="switchSize('large');">Large</a>
           <a href="javascript:void(0);" onclick="switchSize('original');">Original</a>
-          {% if Post.Uploader.Username == User.Username or User.CanEditTags %}
-            | <a href="/posts/edit/{{ Post.ID }}#tags">Edit Post</a>
+          {% if User and Post.Uploader.Username == User.Username or User.CanEditTags %}
+            | <a href="/posts/{{ Post.ID }}/edit#tags">Edit Post</a>
           {% endif %}
         </div>
       </div>
