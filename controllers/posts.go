@@ -4,6 +4,7 @@ import (
 	"errors"
 	"imageboard/config"
 	"imageboard/database"
+	"imageboard/models"
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
 	"imageboard/utils/handlers"
@@ -307,7 +308,7 @@ func PostsSinglePostPageController(ctx *fiber.Ctx) error {
 	})
 }
 
-func PostsSinglePostFavouriteController(ctx *fiber.Ctx) error {
+func PostsSinglePostFavouritePostController(ctx *fiber.Ctx) error {
 	if !auth.IsAuthenticated(ctx) {
 		return ctx.Redirect(auth.GetLoginURLWithNextField(ctx), fiber.StatusFound)
 	}
@@ -339,10 +340,10 @@ func PostsSinglePostFavouriteController(ctx *fiber.Ctx) error {
 		return InternalServerErrorController(ctx, err)
 	}
 
-	return ctx.Redirect("/posts/" + postID)
+	return ctx.Redirect(auth.GetRedirectURL(ctx), fiber.StatusSeeOther)
 }
 
-func PostsSinglePostEditController(ctx *fiber.Ctx) error {
+func PostsSinglePostEditPageController(ctx *fiber.Ctx) error {
 	if !auth.IsAuthenticated(ctx) {
 		return ctx.Redirect(auth.GetLoginURLWithNextField(ctx), fiber.StatusFound)
 	}
@@ -365,13 +366,151 @@ func PostsSinglePostEditController(ctx *fiber.Ctx) error {
 		return InternalServerErrorController(ctx, err)
 	}
 
-	if post.Uploader.Username != auth.GetCurrentUser(ctx).Username || !auth.GetCurrentUser(ctx).CanEditPosts() {
+	currentUser := auth.GetCurrentUser(ctx)
+	if post.Uploader.Username != currentUser.Username && !currentUser.CanEditPosts() {
 		return ForbiddenController(ctx, errors.New("You do not have permission to edit this post"))
+	}
+
+	users, err := database.ListAllUsers()
+	if err != nil {
+		return InternalServerErrorController(ctx, err)
+	}
+	approvers, err := database.ListAllApprovers()
+	if err != nil {
+		return InternalServerErrorController(ctx, err)
+	}
+
+	postTags := make([]map[string]models.Tag, 0, len(post.Tags))
+	for _, tag := range post.Tags {
+		switch tag.Type {
+		case config.TagTypeGeneral:
+			postTags = append(postTags, map[string]models.Tag{"general": tag})
+		case config.TagTypeArtist:
+			postTags = append(postTags, map[string]models.Tag{"artist": tag})
+		case config.TagTypeCharacter:
+			postTags = append(postTags, map[string]models.Tag{"character": tag})
+		case config.TagTypeCopyright:
+			postTags = append(postTags, map[string]models.Tag{"copyright": tag})
+		case config.TagTypeMeta:
+			postTags = append(postTags, map[string]models.Tag{"meta": tag})
+		default:
+			postTags = append(postTags, map[string]models.Tag{"general": tag})
+		}
 	}
 
 	ctx.Locals("Title", config.PT_POST_EDIT+" #"+format.Int64ToString(int64(post.ID)))
 	return shortcuts.Render(ctx, config.TEMPLATE_POST_EDIT, fiber.Map{
-		"Post":   post,
-		"CDNURL": format.GetCDNURL(),
+		"Post":      post,
+		"CDNURL":    format.GetCDNURL(),
+		"Users":     users,
+		"Approvers": approvers,
+		"PostTags":  postTags,
 	})
+}
+
+func PostsSinglePostEditPostController(ctx *fiber.Ctx) error {
+	if !auth.IsAuthenticated(ctx) {
+		return ctx.Redirect(auth.GetLoginURLWithNextField(ctx), fiber.StatusFound)
+	}
+
+	postID := ctx.Params("id")
+	if postID == "" {
+		return NotFoundController(ctx)
+	}
+
+	uintPostID, err := format.StringToUint(postID)
+	if err != nil {
+		return NotFoundController(ctx)
+	}
+
+	post, err := database.GetPostByID(uintPostID)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return NotFoundController(ctx)
+		}
+		return InternalServerErrorController(ctx, err)
+	}
+
+	currentUser := auth.GetCurrentUser(ctx)
+	if post.Uploader.Username != currentUser.Username && !currentUser.CanEditPosts() {
+		return ForbiddenController(ctx, errors.New("You do not have permission to edit this post"))
+	}
+
+	title := ctx.FormValue("title")
+	description := ctx.FormValue("description")
+	sourceURL := ctx.FormValue("source_url")
+	rating := ctx.FormValue("rating")
+
+	updates := make(map[string]interface{})
+
+	if title != post.Title {
+		updates["title"] = title
+	}
+
+	if description != post.Description {
+		updates["description"] = description
+	}
+
+	if sourceURL != post.SourceURL {
+		updates["source_url"] = sourceURL
+	}
+
+	if rating != "" && rating != string(post.Rating) {
+		ratingEnum, err := transformers.ConvertStringRatingToType(rating)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, "Invalid rating value")
+		}
+		updates["rating"] = ratingEnum
+	}
+
+	if currentUser.CanApprovePosts() {
+		isApproved := ctx.FormValue("is_approved") == "1"
+		if isApproved != post.IsApproved {
+			updates["is_approved"] = isApproved
+		}
+	}
+
+	if currentUser.CanDeletePosts() {
+		isDeleted := ctx.FormValue("is_deleted") == "1"
+		if isDeleted != post.IsDeleted {
+			updates["is_deleted"] = isDeleted
+		}
+	}
+
+	if currentUser.IsAdmin() {
+		uploaderID := ctx.FormValue("uploader")
+		if uploaderID != "" {
+			uintUploaderID, err := format.StringToUint(uploaderID)
+			if err == nil && uintUploaderID != post.UploaderID {
+				updates["uploader_id"] = uintUploaderID
+			}
+		}
+
+		approverID := ctx.FormValue("approver")
+		if approverID != "" {
+			if approverID == "0" {
+				if post.ApproverID != nil {
+					updates["approver_id"] = nil
+				}
+			} else {
+				uintApproverID, err := format.StringToUint(approverID)
+				if err == nil && (post.ApproverID == nil || *post.ApproverID != uintApproverID) {
+					updates["approver_id"] = uintApproverID
+				}
+			}
+		}
+	}
+
+	if len(updates) > 0 {
+		if err := database.UpdateImage(post.ID, updates); err != nil {
+			return InternalServerErrorController(ctx, err)
+		}
+	}
+
+	nextURL := ctx.FormValue("next")
+	if nextURL == "" {
+		nextURL = "/posts/" + format.Int64ToString(int64(post.ID))
+	}
+
+	return ctx.Redirect(nextURL, fiber.StatusSeeOther)
 }

@@ -1,4 +1,209 @@
 {% extends 'layouts/main.django' %}
 {% block content %}
-  Edit Post Page
+  <div class="edit-post">
+    <div class="edit-main">
+      {% if Post.Title %}
+        <h1 class="post-title">{{ Post.Title }}</h1>
+      {% else %}
+        <h1 class="post-title">Post #{{ Post.ID }}</h1>
+      {% endif %}
+      <form action="/posts/{{ Post.ID }}/edit" method="post" class="ibform">
+        {% if Error %}
+          <div class="error">{{ Error }}</div>
+        {% endif %}
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="title">Title</label>
+          </div>
+          <div class="fg-sub">
+            <input type="text" class="itext" id="title" name="title" value="{{ Post.Title }}" placeholder="e.g., My Awesome Post" />
+            <small>Optional title for the post. If left empty, the post will be titled "Post #{{ Post.ID }}".</small>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="description">Description</label>
+          </div>
+          <div class="fg-sub">
+            <textarea id="description" name="description" class="itextarea" placeholder="Describe your post here..." rows="6">{{ Post.Description }}</textarea>
+            <small>Optional description for the post. This can be used to provide more context or details about the content of the post. <a href="/help/syntax" target="_blank">Learn more about syntax</a>.</small>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label for="source_url">SourceURL</label>
+          </div>
+          <div class="fg-sub">
+            <input type="url" class="itext" id="source_url" name="source_url" value="{{ Post.SourceURL }}" placeholder="https://example.com/source" />
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="fg-main">
+            <label>Rating</label>
+          </div>
+          <div class="fg-sub-radio">
+            {% if 'Safe' in Post.Rating %}
+              <input type="radio" id="rating-safe" name="rating" value="Safe" checked />
+            {% else %}
+              <input type="radio" id="rating-safe" name="rating" value="Safe" />
+            {% endif %}
+            <label for="rating-safe">Safe</label>
+            {% if 'Sensitive' in Post.Rating %}
+              <input type="radio" id="rating-sensitive" name="rating" value="Sensitive" checked />
+            {% else %}
+              <input type="radio" id="rating-sensitive" name="rating" value="Sensitive" />
+            {% endif %}
+            <label for="rating-sensitive">Sensitive</label>
+            {% if 'Questionable' in Post.Rating %}
+              <input type="radio" id="rating-questionable" name="rating" value="Questionable" checked />
+            {% else %}
+              <input type="radio" id="rating-questionable" name="rating" value="Questionable" />
+            {% endif %}
+            <label for="rating-questionable">Questionable</label>
+            {% if 'Explicit' in Post.Rating %}
+              <input type="radio" id="rating-explicit" name="rating" value="Explicit" checked />
+            {% else %}
+              <input type="radio" id="rating-explicit" name="rating" value="Explicit" />
+            {% endif %}
+            <label for="rating-explicit">Explicit</label>
+          </div>
+        </div>
+        {% if User.CanApprovePosts %}
+          <div class="fgroup">
+            <div class="fg-main">
+              <label for="is_approved">Is Approved</label>
+            </div>
+            <div class="fg-sub-radio">
+              {% if Post.IsApproved %}
+                <input type="checkbox" id="is_approved" name="is_approved" value="1" checked="checked" />
+              {% else %}
+                <input type="checkbox" id="is_approved" name="is_approved" value="1" />
+              {% endif %}
+              <label for="is_approved"><small>Mark this post as approved. Approved posts won't be deleted after 3 days.</small></label>
+            </div>
+          </div>
+        {% endif %}
+        {% if User.CanDeletePosts %}
+          <div class="fgroup">
+            <div class="fg-main">
+              <label for="is_deleted">Is Deleted</label>
+            </div>
+            <div class="fg-sub-radio">
+              {% if Post.IsDeleted %}
+                <input type="checkbox" id="is_deleted" name="is_deleted" value="1" checked="checked" />
+              {% else %}
+                <input type="checkbox" id="is_deleted" name="is_deleted" value="1" />
+              {% endif %}
+              <label for="is_deleted"><small>Mark this post as deleted. Deleted posts are hidden from public view.</small></label>
+            </div>
+          </div>
+        {% endif %}
+        {% if User.IsAdmin %}
+          <div class="fgroup">
+            <div class="fg-main">
+              <label for="uploader">Uploader</label>
+            </div>
+            <div class="fg-sub">
+              <select id="uploader" name="uploader">
+                {% for u in Users %}
+                  {% if u.ID == Post.UploaderID %}
+                    <option value="{{ u.ID }}" selected>{{ u.Username }}</option>
+                  {% else %}
+                    <option value="{{ u.ID }}">{{ u.Username }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="fg-main">
+              <label for="approver">Approver</label>
+            </div>
+            <div class="fg-sub">
+              <select id="approver" name="approver">
+                {% if not Post.ApproverID %}
+                  <option value="0" selected>---</option>
+                {% else %}
+                  <option value="0">---</option>
+                {% endif %}
+                {% for a in Approvers %}
+                  {% if a.ID == Post.ApproverID %}
+                    <option value="{{ a.ID }}" selected>{{ a.Username }}</option>
+                  {% else %}
+                    <option value="{{ a.ID }}">{{ a.Username }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        {% endif %}
+        <input type="hidden" name="next" value="{{ Request.Path }}" />
+        <input type="submit" value="Save Changes" style="margin-top: 8px;" />
+      </form>
+      <h1>Tags</h1>
+      <div class="tag-list">
+        <div class="post-detail-item">
+          <span class="post-detail-label">General Tags:</span>
+          <span class="post-detail-value">
+            {% if PostTags.general|length > 0 %}
+              {% for tag in PostTags.general %}
+                <a href="/tags/{{ tag.Name }}" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+              {% endfor %}
+            {% else %}
+              <span class="no-tags">No general tags</span>
+            {% endif %}
+          </span>
+        </div>
+        <input type="text" id="general-tag-input" class="itext" placeholder="Add general tag" />
+        <button type="button" id="add-general-tag" class="ib-button">Add</button>
+      </div>
+    </div>
+    <div class="edit-sidebar">
+      <img src="{{ CDNURL }}/thumbnail/{{ Post.FileName }}" alt="{{ Post.Title }}" width="{{ Post.Sizes.1.Width }}" height="{{ Post.Sizes.1.Height }}" />
+      <div class="post-detail-item">
+        <span class="post-detail-label">ID:</span>
+        <span class="post-detail-value">{{ Post.ID }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Uploader:</span>
+        <span class="post-detail-value"><a href="/u/{{ Post.Uploader.Username }}">{{ Post.Uploader.Username }}</a></span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Approver:</span>
+        {% if Post.Approver.ID %}
+          <span class="post-detail-value"><a href="/u/{{ Post.Approver.Username }}">{{ Post.Approver.Username }}</a></span>
+        {% else %}
+          {% if Post.IsApproved %}
+            <span class="post-detail-value">N/A</span>
+          {% else %}
+            <span class="post-detail-value">Not Approved</span>
+          {% endif %}
+        {% endif %}
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Filename:</span>
+        <span class="post-detail-value">{{ Post.FileName }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Type:</span>
+        <span class="post-detail-value">{{ Post.ContentType }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">MD5:</span>
+        <span class="post-detail-value">{{ Post.MD5Hash }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">ViewCount:</span>
+        <span class="post-detail-value">{{ Post.ViewCount }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Favourites:</span>
+        <span class="post-detail-value post-favourite-actions">{{ Post.FavouriteCount }}</span>
+      </div>
+      <div class="post-detail-item">
+        <span class="post-detail-label">Comments:</span>
+        <span class="post-detail-value">{{ Post.CommentCount }}</span>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -31,7 +31,7 @@ func GetPosts(limit int, ratings []config.Rating, tags []string) ([]models.Image
 
 func GetPostByID(postID uint) (*models.Image, error) {
 	var post models.Image
-	if err := DB.Preload("Sizes").Preload("Uploader").Preload("Tags").First(&post, postID).Error; err != nil {
+	if err := DB.Preload("Sizes").Preload("Uploader").Preload("Approver").Preload("Tags").First(&post, postID).Error; err != nil {
 		return nil, err
 	}
 	return &post, nil

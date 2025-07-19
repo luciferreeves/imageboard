@@ -58,9 +58,11 @@ func RegisterPostController(ctx *fiber.Ctx) error {
 	}
 
 	user := &models.User{
-		Username: form.Username,
-		Email:    form.Email,
-		Password: form.Password,
+		Username:             form.Username,
+		Email:                form.Email,
+		Password:             form.Password,
+		PostsRequireApproval: true,
+		Level:                config.UserLevelMember,
 	}
 
 	if err := database.CreateUser(user); err != nil {

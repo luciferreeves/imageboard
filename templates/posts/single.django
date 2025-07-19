@@ -83,10 +83,15 @@
           <a href="javascript:void(0);" onclick="switchSize('large');">Large</a>
           <a href="javascript:void(0);" onclick="switchSize('original');">Original</a>
           {% if User and Post.Uploader.Username == User.Username or User.CanEditTags %}
-            | <a href="/posts/{{ Post.ID }}/edit#tags">Edit Post</a>
+            | <a href="/posts/{{ Post.ID }}/edit">Edit Post</a>
           {% endif %}
         </div>
       </div>
+      {% if not Post.IsApproved %}
+        <div class="info" style="margin-bottom: 12px;">
+          This post is pending approval. See <a href="/help/mod_queue">mod queues</a>.
+        </div>
+      {% endif %}
       <div class="post-image-container">
         <img src="{{ CDNURL }}/medium/{{ Post.FileName }}" alt="{{ Post.Title }}" id="post-image" />
       </div>
@@ -108,11 +113,11 @@
           <span class="post-detail-value"><a href="{{ CDNURL }}/original/{{ Post.FileName }}" target="_blank">{{ Post.GetOriginalSize.Width }}x{{ Post.GetOriginalSize.Height }} ({{ Post.GetOriginalSize.GetFileSizeFormatted }})</a></span>
         </div>
         <div class="post-detail-item">
-          <span class="post-detail-label">Favourites:</span>
+          <span class="post-detail-label" id="favourites">Favourites:</span>
           <span class="post-detail-value post-favourite-actions">
             {{ Post.FavouriteCount }}
             <form action="/posts/{{ Post.ID }}/favourite" method="post">
-              <input type="hidden" name="next" value="{{ Request.Path }}" />
+              <input type="hidden" name="next" value="{{ Request.Path }}#favourites" />
               <button type="submit" class="icon-button" title="{{ IsUserFavourited|yesno:'Unfavourite this post,Favourite this post' }}">
                 {% if IsUserFavourited %}
                   <svg viewBox="0 0 24 24">
@@ -129,7 +134,7 @@
         </div>
         <div class="post-detail-item">
           <span class="post-detail-label">Rating:</span>
-          <span class="post-detail-value post-rating {{ Post.Rating }}">{{ Post.Rating }}</span>
+          <span class="post-detail-value post-rating {{ Post.Rating }}"><a href="/posts?rating={{ Post.Rating }}">{{ Post.Rating }}</a></span>
         </div>
       </div>
       <div class="post-details">
@@ -156,6 +161,12 @@
               No tags
             {% endif %}
           </span>
+        </div>
+      </div>
+      <div class="post-details">
+        <div class="post-detail-item">
+          <span class="post-detail-label">Description:</span>
+          <span class="post-detail-value">{{ Post.Description|default:'No description provided.' }}</span>
         </div>
       </div>
     </div>

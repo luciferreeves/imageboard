@@ -34,7 +34,7 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.Username = strings.TrimSpace(u.Username)
+	u.Username = strings.TrimSpace(strings.ToLower(u.Username))
 	u.Email = strings.TrimSpace(strings.ToLower(u.Email))
 
 	if u.Username == "" {
@@ -51,7 +51,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) error {
 	}
 
 	if userCount == 0 {
-		u.Level = config.UserLevelSuperAdmin // First user becomes Super Admin
+		u.Level = config.UserLevelSuperAdmin
+		u.PostsRequireApproval = false
 	}
 
 	if len(u.Username) < 3 && u.Level < config.UserLevelSuperAdmin {

@@ -1,6 +1,9 @@
 package database
 
-import "imageboard/models"
+import (
+	"imageboard/config"
+	"imageboard/models"
+)
 
 func GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
@@ -8,6 +11,18 @@ func GetUserByUsername(username string) (*models.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func ListAllUsers() ([]models.User, error) {
+	var users []models.User
+	err := DB.Where("is_deleted = ?", false).Order("LOWER(username) ASC").Find(&users).Error
+	return users, err
+}
+
+func ListAllApprovers() ([]models.User, error) {
+	var users []models.User
+	err := DB.Where("is_deleted = ? AND level >= ?", false, config.UserLevelJanitor).Order("LOWER(username) ASC").Find(&users).Error
+	return users, err
 }
 
 func GetUserByID(userID uint) (*models.User, error) {

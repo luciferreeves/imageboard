@@ -80,3 +80,7 @@ func CreateImageSizeWithTx(tx *gorm.DB, imageID uint, sizeType config.ImageSizeT
 
 	return &imageSize, nil
 }
+
+func UpdateImage(imageID uint, updates map[string]interface{}) error {
+	return DB.Model(&models.Image{}).Where("id = ?", imageID).Updates(updates).Error
+}

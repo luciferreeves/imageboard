@@ -198,6 +198,7 @@ main {
 
 .itext,
 input[type="text"],
+textarea,
 input[type="email"],
 input[type="password"],
 input[type="number"],
@@ -210,6 +211,7 @@ input[type="url"] {
 
 .itext:focus,
 input[type="text"]:focus,
+textarea:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus,
@@ -217,6 +219,30 @@ input[type="url"]:focus {
     border-color: #ff99cc;
     background-color: #260040;
     outline: none;
+}
+
+select {
+    background-color: #1a0033;
+    border: 1px solid #9999ff;
+    color: #ccccff;
+    padding: 3px 5px;
+    width: 100%;
+}
+
+select:focus {
+    border-color: #ff99cc;
+    background-color: #260040;
+    outline: none;
+}
+
+option {
+    background-color: #1a0033;
+    color: #ccccff;
+}
+
+option:hover {
+    background-color: #260040;
+    color: #ff99cc;
 }
 
 input[type="button"],
@@ -352,7 +378,15 @@ footer::before {
     gap: 4px;
 }
 
-.fg-sub small {
+.fg-sub-radio {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+}
+
+.fg-sub small,
+.fg-sub-radio small {
     color: #ff99cc;
 }
 
@@ -363,7 +397,15 @@ footer::before {
 }
 
 .fg-sub input,
+.fg-sub textarea,
 .fg-sub.itext {
+    border-style: double;
+    border-width: 3px;
+    border-color: #9999ff;
+    width: 100%;
+}
+
+.fg-sub select {
     border-style: double;
     border-width: 3px;
     border-color: #9999ff;
@@ -398,6 +440,13 @@ footer::before {
     padding: 8px;
     margin-bottom: 16px;
     text-align: center;
+}
+
+.info {
+    background-color: #001a33;
+    border: 1px solid #0066cc;
+    padding: 8px;
+    margin-bottom: 16px;
 }
 
 .upload-drag-box {
@@ -765,6 +814,10 @@ footer::before {
     color: #ff6b6b;
 }
 
+.post-rating>a {
+    color: inherit;
+}
+
 .post-rating.Safe {
     color: #4caf50;
 }
@@ -886,7 +939,6 @@ footer::before {
 
 .post-detail-label {
     color: #cccccc;
-    white-space: nowrap;
 }
 
 .post-favourite-actions {
@@ -920,4 +972,40 @@ footer::before {
     width: 16px;
     height: 16px;
     fill: currentColor;
+}
+
+.edit-post {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    align-items: stretch;
+}
+
+.edit-main {
+    flex: 1;
+    padding-right: 8px;
+    border-right: 1px solid #4d4d80;
+}
+
+.edit-sidebar {
+    width: 264px;
+    flex-shrink: 0;
+    padding-left: 8px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.edit-sidebar>.post-detail-item {
+    align-items: flex-start;
+}
+
+.edit-sidebar>.post-detail-item>.post-detail-label {
+    width: 72px;
+    flex-shrink: 0;
+}
+
+.edit-sidebar>.post-detail-item>.post-detail-value {
+    word-break: break-all;
 }
