@@ -22,6 +22,13 @@ func Initialize(router *fiber.App) {
 	posts.Get("/:id/edit", controllers.PostsSinglePostEditPageController)
 	posts.Post("/:id/edit", controllers.PostsSinglePostEditPostController)
 
+	tags := router.Group("/tags")
+	tags.Get("/search.json", controllers.TagsSearchJSONController)
+	tags.Post("/create.json", controllers.FindOrCreateTagJSONController)
+	tags.Get("/search_for_image.json", controllers.TagsSearchForImageJSONController)
+	tags.Post("/add_to_image.json", controllers.TagsAddToImageJSONController)
+	tags.Post("/remove_from_image.json", controllers.TagsRemoveFromImageJSONController)
+
 	login := router.Group("/login")
 	login.Get("/", controllers.LoginPageController)
 	login.Post("/", controllers.LoginPostController)

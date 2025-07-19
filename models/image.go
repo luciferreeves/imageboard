@@ -75,7 +75,7 @@ type Image struct {
 	FavouriteCount int64                   `gorm:"not null;default:0" json:"favorite_count"`
 	CommentCount   int64                   `gorm:"not null;default:0" json:"comment_count"`
 	Sizes          []ImageSize             `gorm:"foreignKey:ImageID" json:"sizes,omitempty"`
-	Tags           []Tag                   `gorm:"many2many:image_tags;joinForeignKey:image_id;joinReferences:tag_id" json:"tags,omitempty"`
+	Tags           []Tag                   `gorm:"many2many:image_tags;joinForeignKey:image_id;joinReferences:tag_id;constraint:OnDelete:CASCADE" json:"tags,omitempty"`
 	FavoritedBy    []User                  `gorm:"many2many:user_favorites" json:"favorited_by,omitempty"`
 	Comments       []Comment               `gorm:"foreignKey:ImageID" json:"comments,omitempty"`
 }
@@ -325,4 +325,18 @@ func (i *Image) IsUserFavourited(tx *gorm.DB, user *User) bool {
 	var count int64
 	tx.Table("user_favorites").Where("user_id = ? AND image_id = ?", user.ID, i.ID).Count(&count)
 	return count > 0
+}
+
+// ImageTag represents the many-to-many relationship between images and tags
+// with a unique constraint to prevent duplicate associations
+type ImageTag struct {
+	ImageID uint  `gorm:"not null;index;uniqueIndex:idx_image_tag_unique" json:"image_id"`
+	TagID   uint  `gorm:"not null;index;uniqueIndex:idx_image_tag_unique" json:"tag_id"`
+	Image   Image `gorm:"foreignKey:ImageID;constraint:OnDelete:CASCADE" json:"-"`
+	Tag     Tag   `gorm:"foreignKey:TagID;constraint:OnDelete:CASCADE" json:"-"`
+}
+
+// TableName specifies the table name for the ImageTag model
+func (ImageTag) TableName() string {
+	return "image_tags"
 }

@@ -19,7 +19,18 @@ type Tag struct {
 	ParentID    *uint          `gorm:"index" json:"-"`
 	Parent      *Tag           `gorm:"foreignKey:ParentID" json:"parent,omitempty"`
 	Children    []Tag          `gorm:"foreignKey:ParentID" json:"children,omitempty"`
-	Images      []Image        `gorm:"many2many:image_tags;joinForeignKey:tag_id;joinReferences:image_id" json:"images,omitempty"`
+	Images      []Image        `gorm:"many2many:image_tags;joinForeignKey:tag_id;joinReferences:image_id;constraint:OnDelete:CASCADE" json:"images,omitempty"`
+	Wiki        *TagWiki       `gorm:"foreignKey:TagID" json:"wiki,omitempty"`
+}
+
+type TagWiki struct {
+	gorm.Model
+	TagID       uint   `gorm:"not null;uniqueIndex" json:"-"`
+	Tag         Tag    `gorm:"foreignKey:TagID" json:"tag,omitempty"`
+	Content     string `gorm:"type:text" json:"content"`
+	EditorID    uint   `gorm:"not null" json:"-"`
+	Editor      User   `gorm:"foreignKey:EditorID" json:"editor,omitempty"`
+	IsProtected bool   `gorm:"not null;default:false" json:"is_protected"`
 }
 
 func (t *Tag) BeforeCreate(tx *gorm.DB) error {
@@ -57,60 +68,6 @@ func (t *Tag) GetFullPath() string {
 		return t.Name
 	}
 	return t.Parent.GetFullPath() + ":" + t.Name
-}
-
-func SearchTags(tx *gorm.DB, query string, limit int) ([]Tag, error) {
-	var tags []Tag
-	searchPattern := "%" + strings.TrimSpace(strings.ToLower(query)) + "%"
-
-	err := tx.Where("name LIKE ? AND is_deleted = ?", searchPattern, false).
-		Order("count DESC, name ASC").Limit(limit).Find(&tags).Error
-
-	return tags, err
-}
-
-func SearchTagsExcluding(tx *gorm.DB, query string, imageID uint, limit int) ([]Tag, error) {
-	var tags []Tag
-	searchPattern := "%" + strings.TrimSpace(strings.ToLower(query)) + "%"
-
-	err := tx.Where("name LIKE ? AND is_deleted = ? AND id NOT IN (?)",
-		searchPattern, false,
-		tx.Table("image_tags").Select("tag_id").Where("image_id = ?", imageID)).
-		Order("count DESC, name ASC").Limit(limit).Find(&tags).Error
-
-	return tags, err
-}
-
-func FindOrCreateTag(tx *gorm.DB, name string, tagType config.TagType) (*Tag, error) {
-	name = strings.TrimSpace(strings.ToLower(name))
-
-	// First check for active tag
-	var tag Tag
-	if err := tx.Where("name = ? AND is_deleted = ?", name, false).First(&tag).Error; err == nil {
-		return &tag, nil
-	}
-
-	// Check for deleted tag and restore it
-	if err := tx.Where("name = ? AND is_deleted = ?", name, true).First(&tag).Error; err == nil {
-		tag.IsDeleted = false
-		tag.Type = tagType // Update type in case it changed
-		if err := tx.Save(&tag).Error; err != nil {
-			return nil, fmt.Errorf("failed to restore tag: %v", err)
-		}
-		return &tag, nil
-	}
-
-	// Create new tag
-	tag = Tag{
-		Name: name,
-		Type: tagType,
-	}
-
-	if err := tx.Create(&tag).Error; err != nil {
-		return nil, err
-	}
-
-	return &tag, nil
 }
 
 func (t *Tag) DeleteTag(tx *gorm.DB) error {

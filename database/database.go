@@ -63,6 +63,8 @@ func autoMigrate() error {
 		&models.Image{},
 		&models.ImageSize{},
 		&models.Tag{},
+		&models.TagWiki{},
+		&models.ImageTag{},
 		&models.Comment{},
 		&models.EmailToken{},
 	)

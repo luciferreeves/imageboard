@@ -140,22 +140,174 @@
         <input type="hidden" name="next" value="{{ Request.Path }}" />
         <input type="submit" value="Save Changes" style="margin-top: 8px;" />
       </form>
-      <h1>Tags</h1>
-      <div class="tag-list">
-        <div class="post-detail-item">
-          <span class="post-detail-label">General Tags:</span>
-          <span class="post-detail-value">
-            {% if PostTags.general|length > 0 %}
-              {% for tag in PostTags.general %}
-                <a href="/tags/{{ tag.Name }}" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
-              {% endfor %}
-            {% else %}
-              <span class="no-tags">No general tags</span>
-            {% endif %}
-          </span>
+
+      <div class="tag-editor">
+        <h1 class="tag-editor-title">✦ Tags ✦</h1>
+
+        <div class="tag-category" data-type="general">
+          <div class="tag-category-header">
+            <h3 class="tag-category-title">
+              <span class="tag-type-icon">General</span>
+              <span class="tag-count">({{ PostTags.general|length }})</span>
+            </h3>
+          </div>
+
+          <div class="tag-list" id="tag-list-general">
+            {% for tag in PostTags.general %}
+              <div class="tag-item" data-tag-id="{{ tag.ID }}">
+                <a href="/tags/{{ tag.Name }}" class="tag-link" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+                {% if tag.Parent %}
+                  <span class="tag-parent-indicator" title="Child of {{ tag.Parent.Name }}">⬆</span>
+                {% endif %}
+                {% if tag.Children %}
+                  <span class="tag-children-indicator" title="Has {{ tag.Children|length }} children">⬇</span>
+                {% endif %}
+                <button type="button" class="tag-remove-btn" data-tag-id="{{ tag.ID }}" title="Remove tag">×</button>
+              </div>
+            {% empty %}
+              <div class="no-tags">No general tags</div>
+            {% endfor %}
+          </div>
+
+          <div class="tag-input-container">
+            <div class="tag-input-wrapper">
+              <input type="text" class="tag-input" data-type="general" placeholder="Add general tag..." autocomplete="off" />
+              <div class="tag-suggestions" id="suggestions-general"></div>
+            </div>
+          </div>
         </div>
-        <input type="text" id="general-tag-input" class="itext" placeholder="Add general tag" />
-        <button type="button" id="add-general-tag" class="ib-button">Add</button>
+
+        <div class="tag-category" data-type="artist">
+          <div class="tag-category-header">
+            <h3 class="tag-category-title">
+              <span class="tag-type-icon">Artist</span>
+              <span class="tag-count">({{ PostTags.artist|length }})</span>
+            </h3>
+          </div>
+
+          <div class="tag-list" id="tag-list-artist">
+            {% for tag in PostTags.artist %}
+              <div class="tag-item" data-tag-id="{{ tag.ID }}">
+                <a href="/tags/{{ tag.Name }}" class="tag-link" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+                {% if tag.Parent %}
+                  <span class="tag-parent-indicator" title="Child of {{ tag.Parent.Name }}">⬆</span>
+                {% endif %}
+                {% if tag.Children %}
+                  <span class="tag-children-indicator" title="Has {{ tag.Children|length }} children">⬇</span>
+                {% endif %}
+                <button type="button" class="tag-remove-btn" data-tag-id="{{ tag.ID }}" title="Remove tag">×</button>
+              </div>
+            {% empty %}
+              <div class="no-tags">No artist tags</div>
+            {% endfor %}
+          </div>
+
+          <div class="tag-input-container">
+            <div class="tag-input-wrapper">
+              <input type="text" class="tag-input" data-type="artist" placeholder="Add artist tag..." autocomplete="off" />
+              <div class="tag-suggestions" id="suggestions-artist"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tag-category" data-type="character">
+          <div class="tag-category-header">
+            <h3 class="tag-category-title">
+              <span class="tag-type-icon">Character</span>
+              <span class="tag-count">({{ PostTags.character|length }})</span>
+            </h3>
+          </div>
+
+          <div class="tag-list" id="tag-list-character">
+            {% for tag in PostTags.character %}
+              <div class="tag-item" data-tag-id="{{ tag.ID }}">
+                <a href="/tags/{{ tag.Name }}" class="tag-link" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+                {% if tag.Parent %}
+                  <span class="tag-parent-indicator" title="Child of {{ tag.Parent.Name }}">⬆</span>
+                {% endif %}
+                {% if tag.Children %}
+                  <span class="tag-children-indicator" title="Has {{ tag.Children|length }} children">⬇</span>
+                {% endif %}
+                <button type="button" class="tag-remove-btn" data-tag-id="{{ tag.ID }}" title="Remove tag">×</button>
+              </div>
+            {% empty %}
+              <div class="no-tags">No character tags</div>
+            {% endfor %}
+          </div>
+
+          <div class="tag-input-container">
+            <div class="tag-input-wrapper">
+              <input type="text" class="tag-input" data-type="character" placeholder="Add character tag..." autocomplete="off" />
+              <div class="tag-suggestions" id="suggestions-character"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tag-category" data-type="copyright">
+          <div class="tag-category-header">
+            <h3 class="tag-category-title">
+              <span class="tag-type-icon">Copyright</span>
+              <span class="tag-count">({{ PostTags.copyright|length }})</span>
+            </h3>
+          </div>
+
+          <div class="tag-list" id="tag-list-copyright">
+            {% for tag in PostTags.copyright %}
+              <div class="tag-item" data-tag-id="{{ tag.ID }}">
+                <a href="/tags/{{ tag.Name }}" class="tag-link" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+                {% if tag.Parent %}
+                  <span class="tag-parent-indicator" title="Child of {{ tag.Parent.Name }}">⬆</span>
+                {% endif %}
+                {% if tag.Children %}
+                  <span class="tag-children-indicator" title="Has {{ tag.Children|length }} children">⬇</span>
+                {% endif %}
+                <button type="button" class="tag-remove-btn" data-tag-id="{{ tag.ID }}" title="Remove tag">×</button>
+              </div>
+            {% empty %}
+              <div class="no-tags">No copyright tags</div>
+            {% endfor %}
+          </div>
+
+          <div class="tag-input-container">
+            <div class="tag-input-wrapper">
+              <input type="text" class="tag-input" data-type="copyright" placeholder="Add copyright tag..." autocomplete="off" />
+              <div class="tag-suggestions" id="suggestions-copyright"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tag-category" data-type="meta">
+          <div class="tag-category-header">
+            <h3 class="tag-category-title">
+              <span class="tag-type-icon">Meta</span>
+              <span class="tag-count">({{ PostTags.meta|length }})</span>
+            </h3>
+          </div>
+
+          <div class="tag-list" id="tag-list-meta">
+            {% for tag in PostTags.meta %}
+              <div class="tag-item" data-tag-id="{{ tag.ID }}">
+                <a href="/tags/{{ tag.Name }}" class="tag-link" style="color: {{ tag.Type.Color }};">{{ tag.Name }}</a>
+                {% if tag.Parent %}
+                  <span class="tag-parent-indicator" title="Child of {{ tag.Parent.Name }}">⬆</span>
+                {% endif %}
+                {% if tag.Children %}
+                  <span class="tag-children-indicator" title="Has {{ tag.Children|length }} children">⬇</span>
+                {% endif %}
+                <button type="button" class="tag-remove-btn" data-tag-id="{{ tag.ID }}" title="Remove tag">×</button>
+              </div>
+            {% empty %}
+              <div class="no-tags">No meta tags</div>
+            {% endfor %}
+          </div>
+
+          <div class="tag-input-container">
+            <div class="tag-input-wrapper">
+              <input type="text" class="tag-input" data-type="meta" placeholder="Add meta tag..." autocomplete="off" />
+              <div class="tag-suggestions" id="suggestions-meta"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="edit-sidebar">
@@ -206,4 +358,7 @@
       </div>
     </div>
   </div>
+{% endblock %}
+{% block scripts %}
+  <script type="text/javascript" src="/static/scripts/tagEditor.js"></script>
 {% endblock %}

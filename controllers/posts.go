@@ -4,7 +4,6 @@ import (
 	"errors"
 	"imageboard/config"
 	"imageboard/database"
-	"imageboard/models"
 	"imageboard/utils/auth"
 	"imageboard/utils/format"
 	"imageboard/utils/handlers"
@@ -380,22 +379,9 @@ func PostsSinglePostEditPageController(ctx *fiber.Ctx) error {
 		return InternalServerErrorController(ctx, err)
 	}
 
-	postTags := make([]map[string]models.Tag, 0, len(post.Tags))
-	for _, tag := range post.Tags {
-		switch tag.Type {
-		case config.TagTypeGeneral:
-			postTags = append(postTags, map[string]models.Tag{"general": tag})
-		case config.TagTypeArtist:
-			postTags = append(postTags, map[string]models.Tag{"artist": tag})
-		case config.TagTypeCharacter:
-			postTags = append(postTags, map[string]models.Tag{"character": tag})
-		case config.TagTypeCopyright:
-			postTags = append(postTags, map[string]models.Tag{"copyright": tag})
-		case config.TagTypeMeta:
-			postTags = append(postTags, map[string]models.Tag{"meta": tag})
-		default:
-			postTags = append(postTags, map[string]models.Tag{"general": tag})
-		}
+	postTags, err := database.GetImageTags(post.ID)
+	if err != nil {
+		return InternalServerErrorController(ctx, err)
 	}
 
 	ctx.Locals("Title", config.PT_POST_EDIT+" #"+format.Int64ToString(int64(post.ID)))
@@ -511,6 +497,5 @@ func PostsSinglePostEditPostController(ctx *fiber.Ctx) error {
 	if nextURL == "" {
 		nextURL = "/posts/" + format.Int64ToString(int64(post.ID))
 	}
-
 	return ctx.Redirect(nextURL, fiber.StatusSeeOther)
 }
