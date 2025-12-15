@@ -6,7 +6,7 @@
       <img src="/static/images/25631a9833b39de4053f9eed8b2d3ae6.webp" alt="Login Image" class="q-img" />
       <h1>Login to {{ Appname }}</h1>
       <p>Welcome back! Please enter your credentials to continue.</p>
-      <form action="/login" method="POST" class="ibform">
+      <form action="/account/login" method="POST" class="ibform">
         {% if Next %}
           <input type="hidden" name="next" value="{{ Next }}" />
         {% endif %}
@@ -33,7 +33,8 @@
         <div class="fbtngrp">
           <input type="submit" value="Login" />
           <input type="button" value="Clear" onclick="this.form.reset();" />
-          <input type="button" value="Forgot Password?" onclick="window.location.href='/account/forgot-password';" />
+          <input type="button" value="Forgot Password?" onclick="window.location.href='/account/forgot?mode=password';" />
+          <input type="button" value="Forgot Username?" onclick="window.location.href='/account/forgot?mode=username';" />
         </div>
       </form>
       <p class="text-center">

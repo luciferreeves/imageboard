@@ -13,6 +13,12 @@ func GetUserByUsername(username string) (*models.User, error) {
 	return &user, nil
 }
 
+func GetUsersByEmail(email string) ([]models.User, error) {
+	var users []models.User
+	err := DB.Where("email = ?", email).Find(&users).Error
+	return users, err
+}
+
 func ListAllUsers() ([]models.User, error) {
 	var users []models.User
 	err := DB.Where("is_deleted = ?", false).Order("LOWER(username) ASC").Find(&users).Error

@@ -2,40 +2,43 @@ package config
 
 const (
 	// Page titles
-	PT_HOME         = "Home Page"
-	PT_LOGIN        = "Login"
-	PT_POST_LIST    = "Posts"
-	PT_POST_NEW     = "Upload New Post"
-	PT_POST_SINGLE  = "Post"
-	PT_POST_EDIT    = "Edit Post"
-	PT_PREFERENCES  = "Preferences"
-	PT_REGISTER     = "Register"
-	PT_404          = "Page Not Found"
-	PT_VERIFY_EMAIL = "Verify Email"
+	PT_HOME            = "Home Page"
+	PT_LOGIN           = "Login"
+	PT_FORGOT_PASSWORD = "Forgot Password"
+	PT_FORGOT_USERNAME = "Forgot Username"
+	PT_POST_LIST       = "Posts"
+	PT_POST_NEW        = "Upload New Post"
+	PT_POST_SINGLE     = "Post"
+	PT_POST_EDIT       = "Edit Post"
+	PT_PREFERENCES     = "Preferences"
+	PT_REGISTER        = "Register"
+	PT_404             = "Page Not Found"
+	PT_VERIFY_EMAIL    = "Verify Email"
 
 	// Template names
 	TEMPLATE_HOME         = "home"
-	TEMPLATE_LOGIN        = "login"
+	TEMPLATE_LOGIN        = "account/login"
+	TEMPLATE_REGISTER     = "account/register"
+	TEMPLATE_FORGOT       = "account/forgot"
+	TEMPLATE_VERIFY_EMAIL = "account/verify_email"
 	TEMPLATE_POST_LIST    = "posts/list"
 	TEMPLATE_POST_NEW     = "posts/new"
 	TEMPLATE_POST_SINGLE  = "posts/single"
 	TEMPLATE_POST_EDIT    = "posts/edit"
 	TEMPLATE_PREFERENCES  = "preferences"
-	TEMPLATE_REGISTER     = "register"
 	TEMPLATE_ERROR        = "error"
-	TEMPLATE_VERIFY_EMAIL = "account/verify_email"
 
 	// URL constants for various routes
 	URL_HOME                = "/"
-	URL_LOGIN               = "/login"
-	URL_LOGOUT              = "/logout"
-	URL_POST_LIST           = "/posts"
-	URL_POST_NEW            = "/posts/new"
-	URL_PREFERENCES         = "/preferences"
-	URL_REGISTER            = "/register"
+	URL_LOGIN               = "/account/login"
+	URL_LOGOUT              = "/account/logout"
+	URL_REGISTER            = "/account/register"
 	URL_VERIFY_EMAIL        = "/account/verify"
 	URL_FORGOT_PASSWORD     = "/account/forgot-password"
 	URL_RESEND_VERIFICATION = "/account/resend-verification"
+	URL_POST_LIST           = "/posts"
+	URL_POST_NEW            = "/posts/new"
+	URL_PREFERENCES         = "/preferences"
 
 	// Error messages
 	ERR_INVALID_FORM_DATA                     = "The submitted form data is invalid. Check your input and try again."
@@ -54,6 +57,10 @@ const (
 	ERR_VERIFY_EMAIL_ACTIVATION_FAILED        = `Failed to activate your account. If this issue persists, contact support.`
 
 	// Success messages
-	SUCCESS_USER_REGISTERED = "Your account has been created successfully. A verification email has been sent to your email address. You will only be able to log in after verifying your email. If you did not receive the email, you can <a href=\"" + URL_RESEND_VERIFICATION + "\">request a new one</a>."
-	SUCCESS_VERIFY_EMAIL    = `Your email has been successfully verified. You can now <a href="` + URL_LOGIN + `">log in</a> to your account.`
+	SUCCESS_USER_REGISTERED            = "Your account has been created successfully. A verification email has been sent to your email address. You will only be able to log in after verifying your email. If you did not receive the email, you can <a href=\"" + URL_RESEND_VERIFICATION + "\">request a new one</a>."
+	SUCCESS_VERIFY_EMAIL               = `Your email has been successfully verified. You can now <a href="` + URL_LOGIN + `">log in</a> to your account.`
+	SUCCESS_FORGOT_USERNAME_EMAIL_SENT = "An email has been sent to your email address with all your associated usernames."
+
+	// Non Existent User
+	ERR_NO_ACCOUNT_ASSOCIATED_WITH_EMAIL = "No account is associated with the provided email address. Check for typos or consider registering for a new account."
 )

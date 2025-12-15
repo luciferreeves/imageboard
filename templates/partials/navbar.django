@@ -16,8 +16,8 @@
       <a href="{{ LogoutURL }}">Logout</a>
     {% else %}
       <span class="user-status">Guest</span>
-      <a href="/login">Login</a>
-      <a href="/register">Register</a>
+      <a href="/account/login">Login</a>
+      <a href="/account/register">Register</a>
     {% endif %}
     <a href="/preferences">Preferences</a>
     <a href="/help">Help</a>

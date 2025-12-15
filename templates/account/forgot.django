@@ -1,0 +1,52 @@
+{% extends 'layouts/main.django' %}
+
+{% block content %}
+  <div class="centered-main">
+    <div class="bordered-box">
+        {% if Mode == "username" %}
+            <img src="/static/images/cdcea50ffd8313b9b5418907e327be65.webp" alt="Forgot Username" class="q-img">
+        {% else %}
+            <img src="/static/images/833de6dd73cb113ff6ebc631cdb14ee3.webp" alt="Forgot Password" class="q-img">
+        {% endif %}
+        <h1>Forgot your {{ Mode|capfirst }}?</h1>
+        <p>No worries! Just enter your email address below and we'll send you an email with {% if Mode == "username" %}your username{% else %}a link to reset your password{% endif %}.</p>
+      <form method="post" action="/account/forgot" class="ibform">
+            {% if Error %}
+                <div class="error">{{ Error|safe }}</div>
+            {% endif %}
+            {% if Success %}
+            <div class="success">{{ Success|safe }}</div>
+            {% endif %}
+            {% if Mode == "password" %}
+                <div class="fgroup">
+                    <div class="fg-main">
+                        <label for="username">Username</label>
+                    </div>
+                    <div class="fg-sub">
+                        <input type="text" class="itext" id="username" name="username" required value="{{ Username }}" maxlength="72" autocomplete="username" pattern="[a-zA-Z0-9_-]+" />
+                        <small>Enter username for which you want to reset the password for. 3-72 characters, letters, numbers, underscores, and hyphens only</small>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="fgroup">
+            <div class="fg-main">
+                <label for="email">Email Address</label>
+            </div>
+            <div class="fg-sub">
+                <input type="email" id="email" name="email" required value="{{ Email }}" />
+            </div>
+            </div>
+            <input type="hidden" name="mode" value="{{ Mode }}" />
+            <div class="fbtngrp">
+                <input type="submit" value="Send Email" />
+                <input type="button" value="Clear" onclick="this.form.reset();" />
+                {% if Mode == "username" %}
+                    <input type="button" value="Forgot Password?" onclick="window.location.href='/account/forgot?mode=password';" />
+                {% else %}
+                    <input type="button" value="Forgot Username?" onclick="window.location.href='/account/forgot?mode=username';" />
+                {% endif %}
+            </div>
+        </form>
+    </div>
+  </div>
+{% endblock %}

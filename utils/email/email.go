@@ -65,6 +65,40 @@ func SendVerificationEmail(user *models.User) error {
 	return SendMail(user.Email, subject, body.String())
 }
 
+func SendForgotUsernameEmail(users *[]models.User) error {
+	tmpl, err := template.ParseFiles("templates/email/forgot_username.html")
+	if err != nil {
+		return fmt.Errorf("failed to parse email template: %w", err)
+	}
+	resetLink := fmt.Sprintf("%s%s?mode=password", config.Server.AppBaseURL, config.URL_FORGOT_PASSWORD)
+	var usernames string
+
+	for i, user := range *users {
+		usernames += user.Username
+		if i < len(*users)-1 {
+			usernames += ", "
+		}
+	}
+
+	data := struct {
+		Username string
+		Appname  string
+		Link     string
+	}{
+		Username: usernames,
+		Appname:  config.Server.AppName,
+		Link:     resetLink,
+	}
+
+	var body bytes.Buffer
+	if err := tmpl.Execute(&body, data); err != nil {
+		return fmt.Errorf("failed to execute email template: %w", err)
+	}
+
+	subject := fmt.Sprintf("Your username for %s", config.Server.AppName)
+	return SendMail((*users)[0].Email, subject, body.String())
+}
+
 // func SendPasswordResetEmail(user *models.User) error {
 // 	token, err := user.GenerateToken(database.DB, models.EmailTokenTypePasswordReset)
 // 	if err != nil {
