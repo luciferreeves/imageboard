@@ -3,6 +3,7 @@ module imageboard
 go 1.24.4
 
 require (
+	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/gofiber/fiber/v2 v2.52.8
 	github.com/gofiber/storage/postgres/v2 v2.0.3
 	github.com/gofiber/template/django/v3 v3.1.14
@@ -10,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/minio/minio-go/v7 v7.0.94
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/tdewolff/minify/v2 v2.23.8
 	golang.org/x/crypto v0.36.0
 	golang.org/x/image v0.29.0
 	gorm.io/driver/postgres v1.6.0
@@ -19,7 +21,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/flosch/pongo2/v6 v6.0.0 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
@@ -41,7 +42,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/rs/xid v1.6.0 // indirect
-	github.com/tdewolff/minify/v2 v2.23.8 // indirect
 	github.com/tdewolff/parse/v2 v2.8.1 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

@@ -63,7 +63,7 @@ func CreateUniqueFileName(sourceURLOrOriginalName, imageFormat string) string {
 }
 
 func ConvertStringRatingToType(rating string) (config.Rating, error) {
-	switch rating {
+	switch strings.ToLower(rating) {
 	case "safe":
 		return config.RatingSafe, nil
 	case "questionable":
